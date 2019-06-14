@@ -1,0 +1,10 @@
+/dist/
+/node_modules/
+/.vagrant
+/.vs/
+/.vscode
+/.data
+/.linaria-cache
+/webpack
+/src/components/CaviarDreamsLoader.js
+

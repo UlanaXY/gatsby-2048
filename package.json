@@ -4,35 +4,44 @@
   "description": "A simple starter to get up and developing quickly with Gatsby",
   "version": "0.1.0",
   "author": "Kyle Mathews <mathews.kyle@gmail.com>",
-  "dependencies": {
-    "gatsby": "^2.9.2",
-    "gatsby-image": "^2.1.4",
-    "gatsby-plugin-manifest": "^2.1.1",
-    "gatsby-plugin-offline": "^2.1.3",
-    "gatsby-plugin-react-helmet": "^3.0.12",
-    "gatsby-plugin-sharp": "^2.1.5",
-    "gatsby-source-filesystem": "^2.0.39",
-    "gatsby-transformer-sharp": "^2.1.21",
-    "prop-types": "^15.7.2",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-helmet": "^5.2.1"
-  },
-  "devDependencies": {
-    "prettier": "^1.18.2"
-  },
-  "keywords": [
-    "gatsby"
-  ],
-  "license": "MIT",
   "scripts": {
     "build": "gatsby build",
     "develop": "gatsby develop",
     "format": "prettier --write src/**/*.{js,jsx}",
     "start": "npm run develop",
     "serve": "gatsby serve",
-    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
+    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\"",
+    "lint:js": "eslint src/**/*.{js,jsx}",
+    "lint:styles": "stylelint src/**/*.{css,scss,js,jsx}"
   },
+  "dependencies": {
+    "gatsby": "^2.9.2",
+    "gatsby-image": "^2.1.4",
+    "gatsby-plugin-linaria": "^1.1.4",
+    "gatsby-plugin-manifest": "^2.1.1",
+    "gatsby-plugin-offline": "^2.1.3",
+    "gatsby-plugin-react-helmet": "^3.0.12",
+    "gatsby-plugin-sharp": "^2.1.5",
+    "gatsby-source-filesystem": "^2.0.39",
+    "gatsby-transformer-sharp": "^2.1.21",
+    "linaria": "^1.3.1",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-helmet": "^5.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-cw": "https://gitlab.com/CommonWombat_Team/Public-Projects/cw-internal-eslintConfigCw.git",
+    "stylelint": "9.2.1",
+    "stylelint-config-cw": "https://gitlab.com/CommonWombat_Team/Public-Projects/cw-internal-stylelintConfigCw.git",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-processor-styled-components": "^1.6.0"
+  },
+  "keywords": [
+    "gatsby"
+  ],
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/gatsbyjs/gatsby-starter-default"
