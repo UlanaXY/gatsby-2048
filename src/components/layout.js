@@ -11,13 +11,12 @@ import { styled } from 'linaria/react';
 import { StaticQuery, graphql } from 'gatsby';
 
 import Header from './header';
-import './layout.css';
+import Game from './game';
 
 
 const PageContainer = styled.div`
   margin: 0 auto;
   max-width: 960px;
-  padding: 0 1.0875rem 1.45rem;
 `;
 
 const Layout = ({ children }) => (
@@ -38,6 +37,7 @@ const Layout = ({ children }) => (
           <main>
             {children}
           </main>
+          {/* <Game /> */}
           <footer>
             ©
             {' '}
