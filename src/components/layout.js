@@ -10,13 +10,10 @@ import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
 import { StaticQuery, graphql } from 'gatsby';
 
-import Header from './header';
-import Game from './game';
-
+import Footer from './footer';
 
 const PageContainer = styled.div`
   margin: 0 auto;
-  max-width: 960px;
 `;
 
 const Layout = ({ children }) => (
@@ -32,20 +29,11 @@ const Layout = ({ children }) => (
     `}
     render={data => (
       <>
-        <Header siteTitle={data.site.siteMetadata.title} />
         <PageContainer>
           <main>
             {children}
           </main>
-          {/* <Game /> */}
-          <footer>
-            ©
-            {' '}
-            {new Date().getFullYear()}
-            {', Built with'}
-            {' '}
-            <a href="https://www.gatsbyjs.org">Gatsby</a>
-          </footer>
+          <Footer />
         </PageContainer>
       </>
     )}

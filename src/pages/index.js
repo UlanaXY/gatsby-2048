@@ -9,13 +9,10 @@ import Layout from '../components/layout';
 import Image from '../components/image';
 import SEO from '../components/seo';
 import Game from '../components/game';
-import Header from '../components/header';
 
 const Main = styled.div`
   display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: flex-start;
+  align-items: flex-start;
 `;
 
 // const header = css`
@@ -25,22 +22,65 @@ const Main = styled.div`
 //   justify-content: flexstart;
 // `;
 
+const Score = styled.div`
+    display: inline-block;
+    background: #bbada0;
+    font-size: 2rem;
+    font-weight: bold;
+    border-radius: 5px;
+    text-align: center;
+    padding: 10px 15px;
+    margin-top: 10px;
+    color: #ffffff; 
+`;
+
+const Wrap = styled.div`
+  width: 200px;
+  height: 100px;
+  margin: 0 auto;
+  text-align: center;
+`;
+
+const Title = styled.header`
+  font-style: normal;
+  font-size: 5rem;
+  font-weight: bold;
+  margin: 0;
+  display: block;
+`;
+
+const Up = styled.div`
+  font-size: 0.8rem;
+`;
+
 const GameContainer = styled.div`
-  margin: auto;
+  margin: 0;
 `;
 
 class IndexPage extends Component {
   render() {
     const { data } = this.props;
     return (
-      <Main>
-        <Header siteTitle={data.site.siteMetadata.title} />
-        <GameContainer>
-          <Game
-            data={data}
-          />
-        </GameContainer>
-      </Main>
+      <Layout>
+        <Main class="main">
+          <Wrap class="aside-1">
+            <Title>
+              {data.site.siteMetadata.title}
+            </Title>
+          </Wrap>
+          <GameContainer class="mid ">
+            <Game
+              data={data}
+            />
+          </GameContainer>
+          <Wrap class="aside-2">
+            <Score>
+              <Up>SCORE:</Up>
+              87446
+            </Score>
+          </Wrap>
+        </Main>
+      </Layout>
     );
   }
 }

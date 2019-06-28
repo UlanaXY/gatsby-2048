@@ -31,7 +31,6 @@ const Wrap = styled.div`
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
-  width: 80%;
 `;
 
 const element = css`
@@ -47,10 +46,6 @@ const Header = ({ siteTitle }) => (
     <Title class={element}>
       {siteTitle}
     </Title>
-    <Score class={element}>
-      <Up>SCORE:</Up>
-       87446
-    </Score>
   </Wrap>
 );
 
