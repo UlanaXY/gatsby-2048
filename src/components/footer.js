@@ -9,47 +9,79 @@ const FooterWrap = styled.div`
     bottom: 0;
     position: absolute;
     height: 3rem;
-`;
-
-const dropdowncontent = css`
-  display: none;
-  position: absolute;
-  min-width: 160px;
-        li {
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-  text-align: left;
-  }
-`;
-
-const dropbtn = css`
-  display: inline-block;
-  text-align: center;
+    
+    display: flex;
+    align-items: flex-start;
+    flex-flow: row;
+    flex-direction: row;
+    justify-content: space-around;
 `;
 
 const Dropdown = styled.div`
-  float: right;
+  position: relative;
   display: inline-block;
-  background: #bb00bb;
-  &:hover ~   .dropdowncontent {
+`;
+
+//  TODO
+//  Stylelint $
+const dropdownContent = css`
+  display: none;
+  position: absolute;
+  min-width: 50px;
+  bottom:100%;
+  ${Dropdown}:hover & {
     display: block;
-    height: 300px;
-    width: 100px;
     background: #bb0000;
   }
 `;
 
+const Element = styled.div`
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    &:hover {
+      background: #bb00bb;
+    }
+    margin: 0 auto;
+`;
+
+const dropBtn = css`
+  background: #bbbba0;
+  display: block;
+  text-align: center;
+  height: 3rem;
+  min-width: 50px;
+  &:hover {
+    background: #bb00bb;
+  }
+`;
+
+const wrap = css`
+  width: 200px;
+  margin: 0 auto;
+  text-align: center;
+`;
+
+const CustomWrap = styled.div`
+  width: 600px;
+  margin: 0 auto;
+  text-align: center;
+`;
+
 const Footer = () => (
   <FooterWrap>
-    <Dropdown>
-      <button type="button" className={dropbtn}>Dropdown</button>
-      <div className={dropdowncontent}>
-        <li>1</li>
-        <li>2</li>
-        <li>3</li>
-      </div>
-    </Dropdown>
+    <div className={wrap} />
+    <CustomWrap />
+    <div className={wrap}>
+      <Dropdown>
+        <div className={dropdownContent}>
+          <Element>1</Element>
+          <Element>2</Element>
+          <Element>3</Element>
+        </div>
+        <div className={dropBtn}>Drop</div>
+      </Dropdown>
+    </div>
   </FooterWrap>
 );
 

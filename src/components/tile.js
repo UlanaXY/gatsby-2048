@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 
 class Tile extends Component {
   render() {
-    const { props } = this;
+    const { value } = this.props;
     return (
       <div>
-        {props.value}
+        {value}
       </div>
     );
   }

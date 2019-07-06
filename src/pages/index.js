@@ -3,16 +3,21 @@ import { styled } from 'linaria/react';
 import { css } from 'linaria';
 import { Link, graphql } from 'gatsby';
 
-import '../components/style.css';
 import PropTypes from 'prop-types';
 import Layout from '../components/layout';
-import Image from '../components/image';
-import SEO from '../components/seo';
 import Game from '../components/game';
 
 const Main = styled.div`
-  display: flex;
-  align-items: flex-start;
+    display: flex;
+    align-items: flex-start;
+    flex-flow: row wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    @media all and (max-width: 1000px) {
+    .aside-1 {order: 1;}
+    .aside-2 {order: 2;}
+    .mid {order: 3;}
+    }
 `;
 
 // const header = css`

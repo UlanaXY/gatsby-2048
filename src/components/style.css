@@ -1,24 +1,4 @@
-html {
-    background: #faf8ef;
-}
-body {
-    margin: 0;
-}
 
-.main {
-    display: flex;
-    align-items: flex-start;
-    flex-flow: row wrap;
-    flex-direction: row;
-    justify-content: space-around;
+:root {
+    --dark-beige: #bbada0;
 }
-
-@media all and (max-width: 1000px) {
-    .aside-1 {order: 1;}
-    .aside-2 {order: 2;}
-    .mid {order: 3;}
-}
-
-/*.dropdown:hover .dropdown-content {*/
-/*    //dosomething*/
-/*}*/

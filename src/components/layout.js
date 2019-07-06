@@ -8,12 +8,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
+import { css } from 'linaria';
 import { StaticQuery, graphql } from 'gatsby';
 
 import Footer from './footer';
 
 const PageContainer = styled.div`
   margin: 0 auto;
+`;
+
+export const globals = css`
+  :global() {
+    html {
+      background: #faf8ef;
+    }
+    body {
+      margin: 0;
+    }
+  }
 `;
 
 const Layout = ({ children }) => (

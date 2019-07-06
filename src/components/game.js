@@ -2,6 +2,7 @@ import React from 'react';
 import { graphql } from 'gatsby';
 import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
+import uuid from "uuid";
 import Layout from './layout';
 import Tile from './tile';
 
@@ -12,6 +13,22 @@ const Container = styled.div`
   height: 600px;
   background: #bbada0;
   border-radius: 5px;
+`;
+
+const Blank = styled.div`
+  width: 127.5px;
+  height: 127.5px;
+  margin-left: 18px;
+  float: left;
+  border-radius: 4px;
+  background: rgba(238, 228, 218, 0.35);
+`;
+
+const Row = styled.div`
+  padding-top: 18px;
+  width: 100%;
+  height: 127.5px;
+  display: block;
 `;
 
 
@@ -25,10 +42,34 @@ class Game extends React.Component {
     }
   }
 
+
+  getRow = (width) => {
+    const rows = [];
+
+    for (let i = 0; i < width; i += 1) {
+      rows[i] = <Blank key={i} />;
+    }
+
+    return (
+      <Row key={uuid.v4()}>
+        {rows}
+      </Row>
+    );
+  }
+
+  getBoard = (width, height) => {
+    const board = [];
+    for (let i = 0; i < height; i += 1) {
+      board[i] = this.getRow(width);
+    }
+    return board;
+  }
+
+
   render() {
     return (
       <Container>
-        <Tile value={2} />
+        {this.getBoard(4, 4)}
       </Container>
     );
   }
