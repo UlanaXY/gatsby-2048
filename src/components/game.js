@@ -1,17 +1,14 @@
 import React from 'react';
-import { graphql } from 'gatsby';
 import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
 import uuid from "uuid";
-import Layout from './layout';
-import Tile from './tile';
 
 const Container = styled.div`
   display: block;
   margin-top: 25px;
   width: 600px;
   height: 600px;
-  background: #bbada0;
+  background: var(--game-background-color);
   border-radius: 5px;
 `;
 

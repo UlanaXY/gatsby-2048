@@ -1,10 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
 import { css } from 'linaria';
 
 const FooterWrap = styled.div`
-    background: #bbada0;
+    background: var(--footer-color);
     width: 100%;
     bottom: 0;
     position: absolute;
@@ -31,7 +30,7 @@ const dropdownContent = css`
   bottom:100%;
   ${Dropdown}:hover & {
     display: block;
-    background: #bb0000;
+    background: var(--buttons-color);
   }
 `;
 
@@ -40,19 +39,19 @@ const Element = styled.div`
     text-decoration: none;
     display: block;
     &:hover {
-      background: #bb00bb;
+      background: var(--footer-color);
     }
     margin: 0 auto;
 `;
 
 const dropBtn = css`
-  background: #bbbba0;
+  background: var(--buttons-color);
   display: block;
   text-align: center;
   height: 3rem;
   min-width: 50px;
   &:hover {
-    background: #bb00bb;
+    background: var(--footer-color);
   }
 `;
 

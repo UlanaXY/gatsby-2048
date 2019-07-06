@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
 import { css } from 'linaria';
 import { StaticQuery, graphql } from 'gatsby';
+import './style.css';
 
 import Footer from './footer';
 
@@ -20,7 +21,7 @@ const PageContainer = styled.div`
 export const globals = css`
   :global() {
     html {
-      background: #faf8ef;
+      background: var(--background-color);
     }
     body {
       margin: 0;

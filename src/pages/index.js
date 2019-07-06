@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { styled } from 'linaria/react';
-import { css } from 'linaria';
 import { Link, graphql } from 'gatsby';
 
 import PropTypes from 'prop-types';
@@ -29,14 +28,14 @@ const Main = styled.div`
 
 const Score = styled.div`
     display: inline-block;
-    background: #bbada0;
+    background: var(--menu-elements-color);
     font-size: 2rem;
     font-weight: bold;
     border-radius: 5px;
     text-align: center;
     padding: 10px 15px;
     margin-top: 10px;
-    color: #ffffff; 
+    color: var(--text-color);
 `;
 
 const Wrap = styled.div`
