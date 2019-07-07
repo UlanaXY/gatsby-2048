@@ -12,19 +12,12 @@ const Main = styled.div`
     flex-flow: row wrap;
     flex-direction: row;
     justify-content: space-around;
-    @media all and (max-width: 1000px) {
-    .aside-1 {order: 1;}
-    .aside-2 {order: 2;}
-    .mid {order: 3;}
+    @media all and (max-width: 999px) {
+      .aside-1 {order: 1;}
+      .aside-2 {order: 2;}
+      .mid {order: 3;}
     }
 `;
-
-// const header = css`
-//   display: flex;
-//   align-items: row;
-//   flex-direction: column;
-//   justify-content: flexstart;
-// `;
 
 const Score = styled.div`
     display: inline-block;
@@ -93,7 +86,8 @@ export const query = graphql`
     query {
         site {
             siteMetadata {
-                title
+                title,
+                size
             }
         }
     }

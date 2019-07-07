@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
-import uuid from "uuid";
+import uuid from 'uuid';
 
 const Container = styled.div`
   display: block;
@@ -37,8 +37,31 @@ class Game extends React.Component {
     for (let i = 0; i < data.site.siteMetadata.size; i += 1) {
       board[i] = new Array(data.site.siteMetadata.size);
     }
+    this.state = {
+      board,
+    };
   }
 
+  newTile = (board) => {
+    const { data } = this.props;
+    let posX;
+    let posY;
+    while (true) {
+      posX = Math.floor(Math.random() * (data.site.siteMetadata.size - 1));
+      posY = Math.floor(Math.random() * (data.site.siteMetadata.size - 1));
+      if (board[posX][posY] === 0) break;
+    }
+    const whichTile = Math.floor(Math.random() * 9);
+    if (whichTile === 0) {
+      board[posX][posY] = 4;
+    } else {
+      board[posX][posY] = 2;
+    }
+  }
+
+  move = (oneDirection) => {
+
+  }
 
   getRow = (width) => {
     const rows = [];
@@ -64,9 +87,10 @@ class Game extends React.Component {
 
 
   render() {
+    const { data } = this.props;
     return (
       <Container>
-        {this.getBoard(4, 4)}
+        {this.getBoard(data.site.siteMetadata.size, data.site.siteMetadata.size)}
       </Container>
     );
   }
