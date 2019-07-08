@@ -15,6 +15,7 @@
     "lint:styles": "stylelint src/**/*.{css,scss,js,jsx}"
   },
   "dependencies": {
+    "@angular/core": "^8.1.0",
     "gatsby": "^2.9.2",
     "gatsby-image": "^2.1.4",
     "gatsby-plugin-linaria": "^1.1.4",
@@ -29,6 +30,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-helmet": "^5.2.1",
+    "react-key-handler": "^1.2.0-beta.3",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

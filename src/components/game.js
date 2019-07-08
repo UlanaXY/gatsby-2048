@@ -36,31 +36,158 @@ class Game extends React.Component {
     const board = [];
     for (let i = 0; i < data.site.siteMetadata.size; i += 1) {
       board[i] = new Array(data.site.siteMetadata.size);
+      for (let j = 0; j < data.site.siteMetadata.size; j += 1) {
+        board[i][j] = 0;
+      }
     }
     this.state = {
       board,
     };
+    this.handleKeyDown = this.handleKeyDown.bind(this);
   }
 
-  newTile = (board) => {
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyDown, false);
+    this.newTile();
+    this.newTile();
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyDown, false);
+  }
+
+  handleKeyDown = (event) => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp'
+      || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      this.move(event);
+    }
+  }
+
+  move = (direction) => {
+    const { data } = this.props;
+    const { board } = this.state;
+
+    class Element {
+      constructor(value, isUsed) {
+        this.value = value;
+        this.isUsed = isUsed;
+      }
+    }
+
+    const ground = [];
+    let i;
+    let j;
+    let k;
+    for (i = 0; i < data.site.siteMetadata.size; i += 1) {
+      ground[i] = new Array(data.site.siteMetadata.size);
+    }
+
+    for (i = 0; i < data.site.siteMetadata.size; i += 1) {
+      console.log(i + ":  ", board[i][0], board[i][1], board[i][2], board[i][3]);
+      for (j = 0; j < data.site.siteMetadata.size; j += 1) {
+        ground[i][j] = new Element(board[i][j], false);
+      }
+    }
+
+    if (direction.key === 'ArrowRight') {
+      for (i = 0; i < data.site.siteMetadata.size; i += 1) {
+        for (j = (data.site.siteMetadata.size - 2); j >= 0; j -= 1) {
+          if (ground[i][j].value !== 0) {
+            for (k = j + 1; k < data.site.siteMetadata.size; k += 1) {
+              if (ground[i][k - 1].value === ground[i][k].value && ground[i][k].isUsed === false) {
+                ground[i][k].value *= 2;
+                ground[i][k].isUsed = true;
+                ground[i][k - 1].value = 0;
+                break;
+              } else if (ground[i][k].value === 0) {
+                ground[i][k].value = ground[i][k - 1].value;
+                ground[i][k - 1].value = 0;
+              }
+            }
+          }
+        }
+      }
+    } else if (direction.key === 'ArrowLeft') {
+      for (i = 0; i < data.site.siteMetadata.size; i += 1) {
+        for (j = 1; j < data.site.siteMetadata.size; j += 1) {
+          if (ground[i][j].value !== 0) {
+            for (k = j - 1; k >= 0; k -= 1) {
+              if (ground[i][k + 1].value === ground[i][k].value && ground[i][k].isUsed === false) {
+                ground[i][k].value *= 2;
+                ground[i][k].isUsed = true;
+                ground[i][k + 1].value = 0;
+                break;
+              } else if (ground[i][k].value === 0) {
+                ground[i][k].value = ground[i][k + 1].value;
+                ground[i][k + 1].value = 0;
+              }
+            }
+          }
+        }
+      }
+    } else if (direction.key === 'ArrowUp') {
+      for (j = 0; j < data.site.siteMetadata.size; j += 1) {
+        for (i = 1; i < data.site.siteMetadata.size; i += 1) {
+          if (ground[i][j].value !== 0) {
+            for (k = i - 1; k >= 0; k -= 1) {
+              if (ground[k + 1][j].value === ground[k][j].value && ground[k][j].isUsed === false) {
+                ground[k][j].value *= 2;
+                ground[k][j].isUsed = true;
+                ground[k + 1][j].value = 0;
+                break;
+              } else if (ground[k][j].value === 0) {
+                ground[k][j].value = ground[k + 1][j].value;
+                ground[k + 1][j].value = 0;
+              }
+            }
+          }
+        }
+      }
+    } else if (direction.key === 'ArrowDown') {
+      for (j = 0; j < data.site.siteMetadata.size; j += 1) {
+        for (i = data.site.siteMetadata.size - 2; i > 0; i -= 1) {
+          if (ground[i][j].value !== 0) {
+            for (k = i + 1; k < data.site.siteMetadata.size; k += 1) {
+              if (ground[k - 1][j].value === ground[k][j].value && ground[k][j].isUsed === false) {
+                ground[k][j].value *= 2;
+                ground[k][j].isUsed = true;
+                ground[k - 1][j].value = 0;
+                break;
+              } else if (ground[k][j].value === 0) {
+                ground[k][j].value = ground[k - 1][j].value;
+                ground[k - 1][j].value = 0;
+              }
+            }
+          }
+        }
+      }
+    }
+    console.log(" ");
+    for (i = 0; i < data.site.siteMetadata.size; i += 1) {
+      console.log(i + ":  ", ground[i][0].value, ground[i][1].value, ground[i][2].value, ground[i][3].value);
+      for (j = 0; j < data.site.siteMetadata.size; j += 1) {
+        board[i][j] = 0;
+        board[i][j] = ground[i][j].value;
+      }
+    }
+    console.log(" ");
+  }
+
+  newTile = () => {
     const { data } = this.props;
     let posX;
     let posY;
-    while (true) {
+    const { board } = this.state;
+    do {
       posX = Math.floor(Math.random() * (data.site.siteMetadata.size - 1));
       posY = Math.floor(Math.random() * (data.site.siteMetadata.size - 1));
-      if (board[posX][posY] === 0) break;
-    }
+    } while (board[posX][posY] !== 0);
     const whichTile = Math.floor(Math.random() * 9);
     if (whichTile === 0) {
       board[posX][posY] = 4;
     } else {
       board[posX][posY] = 2;
     }
-  }
-
-  move = (oneDirection) => {
-
   }
 
   getRow = (width) => {
@@ -84,7 +211,6 @@ class Game extends React.Component {
     }
     return board;
   }
-
 
   render() {
     const { data } = this.props;
