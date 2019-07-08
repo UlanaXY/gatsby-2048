@@ -1,0 +1,10 @@
+
+:root {
+    --background-color: #faf8ef;
+    --menu-elements-color: #bbada0;
+    --game-background-color: #bbada0;
+    --game-empty-tiles-color: rgba(238, 228, 218, 0.35);
+    --footer-color: #bbada0;
+    --buttons-color: #8F7A66;
+    --text-color: white;
+}

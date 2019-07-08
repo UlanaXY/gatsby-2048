@@ -8,16 +8,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
+import { css } from 'linaria';
 import { StaticQuery, graphql } from 'gatsby';
+import './style.css';
 
-import Header from './header';
-import './layout.css';
-
+import Footer from './footer';
 
 const PageContainer = styled.div`
   margin: 0 auto;
-  max-width: 960px;
-  padding: 0 1.0875rem 1.45rem;
+`;
+
+export const globals = css`
+  :global() {
+    html {
+      background: var(--background-color);
+    }
+    body {
+      margin: 0;
+    }
+  }
 `;
 
 const Layout = ({ children }) => (
@@ -25,7 +34,7 @@ const Layout = ({ children }) => (
     query={graphql`
       query SiteTitleQuery {
         site {
-          siteMetadata {
+          siteMetadata {   
             title
           }
         }
@@ -33,19 +42,11 @@ const Layout = ({ children }) => (
     `}
     render={data => (
       <>
-        <Header siteTitle={data.site.siteMetadata.title} />
         <PageContainer>
           <main>
             {children}
           </main>
-          <footer>
-            ©
-            {' '}
-            {new Date().getFullYear()}
-            {', Built with'}
-            {' '}
-            <a href="https://www.gatsbyjs.org">Gatsby</a>
-          </footer>
+          <Footer />
         </PageContainer>
       </>
     )}
