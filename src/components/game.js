@@ -83,7 +83,7 @@ class Game extends React.Component {
     }
 
     for (i = 0; i < data.site.siteMetadata.size; i += 1) {
-      // console.log(i + ":  ", board[i][0], board[i][1], board[i][2], board[i][3]);
+      console.log(i + ":  ", board[i][0], board[i][1], board[i][2], board[i][3]);
       for (j = 0; j < data.site.siteMetadata.size; j += 1) {
         ground[i][j] = new Element(board[i][j], false);
       }
@@ -145,7 +145,7 @@ class Game extends React.Component {
       }
     } else if (direction.key === 'ArrowDown') {
       for (j = 0; j < data.site.siteMetadata.size; j += 1) {
-        for (i = data.site.siteMetadata.size - 2; i > 0; i -= 1) {
+        for (i = data.site.siteMetadata.size - 2; i >= 0; i -= 1) {
           if (ground[i][j].value !== 0) {
             for (k = i + 1; k < data.site.siteMetadata.size; k += 1) {
               if (ground[k - 1][j].value === ground[k][j].value && ground[k][j].isUsed === false) {
@@ -162,16 +162,16 @@ class Game extends React.Component {
         }
       }
     }
-    // console.log(" ");
+    console.log("\n");
     for (i = 0; i < data.site.siteMetadata.size; i += 1) {
-      // console.log(i + ":  ", ground[i][0].value, ground[i][1].value,
-      // ground[i][2].value, ground[i][3].value);
+      console.log(i + ":  ", ground[i][0].value, ground[i][1].value,
+      ground[i][2].value, ground[i][3].value);
       for (j = 0; j < data.site.siteMetadata.size; j += 1) {
         board[i][j] = 0;
         board[i][j] = ground[i][j].value;
       }
     }
-    // console.log(" ");
+    console.log("\n");
   }
 
   newTile = () => {
