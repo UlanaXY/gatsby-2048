@@ -15,7 +15,6 @@
     "lint:styles": "stylelint src/**/*.{css,scss,js,jsx}"
   },
   "dependencies": {
-    "@angular/core": "^8.1.0",
     "gatsby": "^2.9.2",
     "gatsby-image": "^2.1.4",
     "gatsby-plugin-linaria": "^1.1.4",
