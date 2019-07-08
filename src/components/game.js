@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
 import uuid from 'uuid';
+import Tile from './tile';
 
 const Container = styled.div`
   display: block;
@@ -10,6 +11,16 @@ const Container = styled.div`
   height: 600px;
   background: var(--game-background-color);
   border-radius: 5px;
+  position: relative;
+`;
+
+const BlankContainer = styled.div`
+  display: block;
+  width: 600px;
+  height: 600px;
+  border-radius: 5px;
+  position: absolute;
+  top: 0;
 `;
 
 const Blank = styled.div`
@@ -27,7 +38,6 @@ const Row = styled.div`
   height: 127.5px;
   display: block;
 `;
-
 
 class Game extends React.Component {
   constructor(props) {
@@ -162,7 +172,7 @@ class Game extends React.Component {
         }
       }
     }
-    // console.log(" ");
+    // console.log("\n");
     for (i = 0; i < data.site.siteMetadata.size; i += 1) {
       // console.log(i + ":  ", ground[i][0].value, ground[i][1].value,
       // ground[i][2].value, ground[i][3].value);
@@ -171,7 +181,8 @@ class Game extends React.Component {
         board[i][j] = ground[i][j].value;
       }
     }
-    // console.log(" ");
+    this.forceUpdate();
+    // console.log("\n");
   }
 
   newTile = () => {
@@ -213,11 +224,36 @@ class Game extends React.Component {
     return board;
   }
 
+  getTile = (width, row) => {
+    const { board } = this.state;
+    const rows = [];
+    for (let i = 0; i < width; i += 1) {
+      rows[i] = <Tile key={i} value={board[row][i]} />;
+    }
+
+    return (
+      <Row key={uuid.v4()}>
+        {rows}
+      </Row>
+    );
+  }
+
+  getState = (width, height) => {
+    const board = [];
+    for (let i = 0; i < height; i += 1) {
+      board[i] = this.getTile(width, i);
+    }
+    return board;
+  }
+
   render() {
     const { data } = this.props;
     return (
       <Container>
         {this.getBoard(data.site.siteMetadata.size, data.site.siteMetadata.size)}
+        <BlankContainer>
+          {this.getState(data.site.siteMetadata.size, data.site.siteMetadata.size)}
+        </BlankContainer>
       </Container>
     );
   }
