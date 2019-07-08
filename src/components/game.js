@@ -83,7 +83,7 @@ class Game extends React.Component {
     }
 
     for (i = 0; i < data.site.siteMetadata.size; i += 1) {
-      console.log(i + ":  ", board[i][0], board[i][1], board[i][2], board[i][3]);
+      // console.log(i + ":  ", board[i][0], board[i][1], board[i][2], board[i][3]);
       for (j = 0; j < data.site.siteMetadata.size; j += 1) {
         ground[i][j] = new Element(board[i][j], false);
       }
@@ -162,15 +162,16 @@ class Game extends React.Component {
         }
       }
     }
-    console.log(" ");
+    // console.log(" ");
     for (i = 0; i < data.site.siteMetadata.size; i += 1) {
-      console.log(i + ":  ", ground[i][0].value, ground[i][1].value, ground[i][2].value, ground[i][3].value);
+      // console.log(i + ":  ", ground[i][0].value, ground[i][1].value,
+      // ground[i][2].value, ground[i][3].value);
       for (j = 0; j < data.site.siteMetadata.size; j += 1) {
         board[i][j] = 0;
         board[i][j] = ground[i][j].value;
       }
     }
-    console.log(" ");
+    // console.log(" ");
   }
 
   newTile = () => {
