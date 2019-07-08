@@ -92,7 +92,7 @@ class Game extends React.Component {
     }
 
     for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-      // console.log(`${i}:  `, board[i][0], board[i][1], board[i][2], board[i][3]);
+      console.log(`${i}:  `, board[i][0], board[i][1], board[i][2], board[i][3]);
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
         temporaryBoard[i][j] = new Element(board[i][j], false);
       }
@@ -184,6 +184,8 @@ class Game extends React.Component {
         board[i][j] = temporaryBoard[i][j].value;
       }
     }
+    this.newTile();
+    this.forceUpdate();
     // console.log("\n");
   }
 
@@ -254,8 +256,8 @@ class Game extends React.Component {
       <Container>
         {this.getBoard(data.site.siteMetadata.boardSize, data.site.siteMetadata.boardSize)}
         <BlankContainer>
-        </BlankContainer>
           {this.getState(data.site.siteMetadata.boardSize, data.site.siteMetadata.boardSize)}
+        </BlankContainer>
       </Container>
     );
   }
