@@ -155,7 +155,7 @@ class Game extends React.Component {
       }
     } else if (direction.key === 'ArrowDown') {
       for (j = 0; j < data.site.siteMetadata.size; j += 1) {
-        for (i = data.site.siteMetadata.size - 2; i > 0; i -= 1) {
+        for (i = data.site.siteMetadata.size - 2; i >= 0; i -= 1) {
           if (ground[i][j].value !== 0) {
             for (k = i + 1; k < data.site.siteMetadata.size; k += 1) {
               if (ground[k - 1][j].value === ground[k][j].value && ground[k][j].isUsed === false) {
