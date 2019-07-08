@@ -44,16 +44,15 @@ class Game extends React.Component {
     super(props);
     const { data } = this.props;
     const board = [];
-    for (let i = 0; i < data.site.siteMetadata.size; i += 1) {
-      board[i] = new Array(data.site.siteMetadata.size);
-      for (let j = 0; j < data.site.siteMetadata.size; j += 1) {
+    for (let i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+      board[i] = new Array(data.site.siteMetadata.boardSize);
+      for (let j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
         board[i][j] = 0;
       }
     }
     this.state = {
       board,
     };
-    this.handleKeyDown = this.handleKeyDown.bind(this);
   }
 
   componentDidMount() {
@@ -84,88 +83,92 @@ class Game extends React.Component {
       }
     }
 
-    const ground = [];
+    const temporaryBoard = [];
     let i;
     let j;
     let k;
-    for (i = 0; i < data.site.siteMetadata.size; i += 1) {
-      ground[i] = new Array(data.site.siteMetadata.size);
+    for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+      temporaryBoard[i] = new Array(data.site.siteMetadata.boardSize);
     }
 
-    for (i = 0; i < data.site.siteMetadata.size; i += 1) {
-      // console.log(i + ":  ", board[i][0], board[i][1], board[i][2], board[i][3]);
-      for (j = 0; j < data.site.siteMetadata.size; j += 1) {
-        ground[i][j] = new Element(board[i][j], false);
+    for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+      // console.log(`${i}:  `, board[i][0], board[i][1], board[i][2], board[i][3]);
+      for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
+        temporaryBoard[i][j] = new Element(board[i][j], false);
       }
     }
 
     if (direction.key === 'ArrowRight') {
-      for (i = 0; i < data.site.siteMetadata.size; i += 1) {
-        for (j = (data.site.siteMetadata.size - 2); j >= 0; j -= 1) {
-          if (ground[i][j].value !== 0) {
-            for (k = j + 1; k < data.site.siteMetadata.size; k += 1) {
-              if (ground[i][k - 1].value === ground[i][k].value && ground[i][k].isUsed === false) {
-                ground[i][k].value *= 2;
-                ground[i][k].isUsed = true;
-                ground[i][k - 1].value = 0;
+      for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+        for (j = (data.site.siteMetadata.boardSize - 2); j >= 0; j -= 1) {
+          if (temporaryBoard[i][j].value !== 0) {
+            for (k = j + 1; k < data.site.siteMetadata.boardSize; k += 1) {
+              if (temporaryBoard[i][k - 1].value === temporaryBoard[i][k].value
+                && temporaryBoard[i][k].isUsed === false) {
+                temporaryBoard[i][k].value *= 2;
+                temporaryBoard[i][k].isUsed = true;
+                temporaryBoard[i][k - 1].value = 0;
                 break;
-              } else if (ground[i][k].value === 0) {
-                ground[i][k].value = ground[i][k - 1].value;
-                ground[i][k - 1].value = 0;
+              } else if (temporaryBoard[i][k].value === 0) {
+                temporaryBoard[i][k].value = temporaryBoard[i][k - 1].value;
+                temporaryBoard[i][k - 1].value = 0;
               }
             }
           }
         }
       }
     } else if (direction.key === 'ArrowLeft') {
-      for (i = 0; i < data.site.siteMetadata.size; i += 1) {
-        for (j = 1; j < data.site.siteMetadata.size; j += 1) {
-          if (ground[i][j].value !== 0) {
+      for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+        for (j = 1; j < data.site.siteMetadata.boardSize; j += 1) {
+          if (temporaryBoard[i][j].value !== 0) {
             for (k = j - 1; k >= 0; k -= 1) {
-              if (ground[i][k + 1].value === ground[i][k].value && ground[i][k].isUsed === false) {
-                ground[i][k].value *= 2;
-                ground[i][k].isUsed = true;
-                ground[i][k + 1].value = 0;
+              if (temporaryBoard[i][k + 1].value === temporaryBoard[i][k].value
+                && temporaryBoard[i][k].isUsed === false) {
+                temporaryBoard[i][k].value *= 2;
+                temporaryBoard[i][k].isUsed = true;
+                temporaryBoard[i][k + 1].value = 0;
                 break;
-              } else if (ground[i][k].value === 0) {
-                ground[i][k].value = ground[i][k + 1].value;
-                ground[i][k + 1].value = 0;
+              } else if (temporaryBoard[i][k].value === 0) {
+                temporaryBoard[i][k].value = temporaryBoard[i][k + 1].value;
+                temporaryBoard[i][k + 1].value = 0;
               }
             }
           }
         }
       }
     } else if (direction.key === 'ArrowUp') {
-      for (j = 0; j < data.site.siteMetadata.size; j += 1) {
-        for (i = 1; i < data.site.siteMetadata.size; i += 1) {
-          if (ground[i][j].value !== 0) {
+      for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
+        for (i = 1; i < data.site.siteMetadata.boardSize; i += 1) {
+          if (temporaryBoard[i][j].value !== 0) {
             for (k = i - 1; k >= 0; k -= 1) {
-              if (ground[k + 1][j].value === ground[k][j].value && ground[k][j].isUsed === false) {
-                ground[k][j].value *= 2;
-                ground[k][j].isUsed = true;
-                ground[k + 1][j].value = 0;
+              if (temporaryBoard[k + 1][j].value === temporaryBoard[k][j].value
+                && temporaryBoard[k][j].isUsed === false) {
+                temporaryBoard[k][j].value *= 2;
+                temporaryBoard[k][j].isUsed = true;
+                temporaryBoard[k + 1][j].value = 0;
                 break;
-              } else if (ground[k][j].value === 0) {
-                ground[k][j].value = ground[k + 1][j].value;
-                ground[k + 1][j].value = 0;
+              } else if (temporaryBoard[k][j].value === 0) {
+                temporaryBoard[k][j].value = temporaryBoard[k + 1][j].value;
+                temporaryBoard[k + 1][j].value = 0;
               }
             }
           }
         }
       }
     } else if (direction.key === 'ArrowDown') {
-      for (j = 0; j < data.site.siteMetadata.size; j += 1) {
-        for (i = data.site.siteMetadata.size - 2; i >= 0; i -= 1) {
-          if (ground[i][j].value !== 0) {
-            for (k = i + 1; k < data.site.siteMetadata.size; k += 1) {
-              if (ground[k - 1][j].value === ground[k][j].value && ground[k][j].isUsed === false) {
-                ground[k][j].value *= 2;
-                ground[k][j].isUsed = true;
-                ground[k - 1][j].value = 0;
+      for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
+        for (i = data.site.siteMetadata.boardSize - 2; i >= 0; i -= 1) {
+          if (temporaryBoard[i][j].value !== 0) {
+            for (k = i + 1; k < data.site.siteMetadata.boardSize; k += 1) {
+              if (temporaryBoard[k - 1][j].value === temporaryBoard[k][j].value
+                && temporaryBoard[k][j].isUsed === false) {
+                temporaryBoard[k][j].value *= 2;
+                temporaryBoard[k][j].isUsed = true; // is merged
+                temporaryBoard[k - 1][j].value = 0;
                 break;
-              } else if (ground[k][j].value === 0) {
-                ground[k][j].value = ground[k - 1][j].value;
-                ground[k - 1][j].value = 0;
+              } else if (temporaryBoard[k][j].value === 0) {
+                temporaryBoard[k][j].value = temporaryBoard[k - 1][j].value;
+                temporaryBoard[k - 1][j].value = 0;
               }
             }
           }
@@ -173,15 +176,14 @@ class Game extends React.Component {
       }
     }
     // console.log("\n");
-    for (i = 0; i < data.site.siteMetadata.size; i += 1) {
-      // console.log(i + ":  ", ground[i][0].value, ground[i][1].value,
-      // ground[i][2].value, ground[i][3].value);
-      for (j = 0; j < data.site.siteMetadata.size; j += 1) {
+    for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+      // console.log(i + ":  ", temporaryBoard[i][0].value, temporaryBoard[i][1].value,
+      // temporaryBoard[i][2].value, temporaryBoard[i][3].value);
+      for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
         board[i][j] = 0;
-        board[i][j] = ground[i][j].value;
+        board[i][j] = temporaryBoard[i][j].value;
       }
     }
-    this.forceUpdate();
     // console.log("\n");
   }
 
@@ -191,8 +193,8 @@ class Game extends React.Component {
     let posY;
     const { board } = this.state;
     do {
-      posX = Math.floor(Math.random() * (data.site.siteMetadata.size - 1));
-      posY = Math.floor(Math.random() * (data.site.siteMetadata.size - 1));
+      posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize - 1));
+      posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize - 1));
     } while (board[posX][posY] !== 0);
     const whichTile = Math.floor(Math.random() * 9);
     if (whichTile === 0) {
@@ -250,10 +252,10 @@ class Game extends React.Component {
     const { data } = this.props;
     return (
       <Container>
-        {this.getBoard(data.site.siteMetadata.size, data.site.siteMetadata.size)}
+        {this.getBoard(data.site.siteMetadata.boardSize, data.site.siteMetadata.boardSize)}
         <BlankContainer>
-          {this.getState(data.site.siteMetadata.size, data.site.siteMetadata.size)}
         </BlankContainer>
+          {this.getState(data.site.siteMetadata.boardSize, data.site.siteMetadata.boardSize)}
       </Container>
     );
   }
