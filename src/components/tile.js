@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
 
 const TileLayout = styled.div`
-  display: var(--if-display);
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   font-weight: bold;
   width: 127.5px;
@@ -19,6 +18,9 @@ const TileLayout = styled.div`
 `;
 
 const tileColor = (value) => {
+  if (value === 0) {
+    return 'default';
+  }
   if (value === 2) {
     return '#EEE4DA';
   }
@@ -64,10 +66,10 @@ const fontSize = (value) => {
 
 const toDisplay = (value) => {
   if (value === 0) {
-    return 'none';
+    return '';
   }
-  return 'block';
-}
+  return value;
+};
 
 class Tile extends Component {
   render() {
@@ -78,11 +80,10 @@ class Tile extends Component {
           '--tile-color': tileColor(value),
           '--text-color': textColor(value),
           '--font-size': fontSize(value),
-          '--if-display': toDisplay(value),
         }}
       >
         {
-          value
+          toDisplay(value)
         }
       </TileLayout>
     );

@@ -199,7 +199,7 @@ class Game extends React.Component {
     const { board } = this.state;
     for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-        if (board[i][j] === 0){
+        if (board[i][j] === 0) {
           countFreePlaces += 1;
         }
       }
@@ -213,7 +213,7 @@ class Game extends React.Component {
     let posY;
     const { board } = this.state;
     // WIP
-    if (this.checkIfBoardIsFull) {} // end of game
+    if (!this.checkIfBoardIsFull) {} // game over
     else {
       do {
         posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
