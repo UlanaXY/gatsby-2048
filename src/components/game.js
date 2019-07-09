@@ -121,7 +121,7 @@ class Game extends React.Component {
           if (temporaryBoard[i][j].value !== 0) {
             for (k = j + 1; k < data.site.siteMetadata.boardSize; k += 1) {
               if (temporaryBoard[i][k - 1].value === temporaryBoard[i][k].value
-                && temporaryBoard[i][k].isUsed === false) {
+                && temporaryBoard[i][k].isUsed === false && temporaryBoard[i][k - 1].isUsed === false) {
                 mergeTiles(i, k, i, (k - 1));
                 break;
               } else if (temporaryBoard[i][k].value === 0) {
@@ -137,7 +137,7 @@ class Game extends React.Component {
           if (temporaryBoard[i][j].value !== 0) {
             for (k = j - 1; k >= 0; k -= 1) {
               if (temporaryBoard[i][k + 1].value === temporaryBoard[i][k].value
-                && temporaryBoard[i][k].isUsed === false) {
+                && temporaryBoard[i][k].isUsed === false && temporaryBoard[i][k + 1].isUsed === false) {
                 mergeTiles(i, k, i, (k + 1));
                 break;
               } else if (temporaryBoard[i][k].value === 0) {
@@ -153,7 +153,7 @@ class Game extends React.Component {
           if (temporaryBoard[i][j].value !== 0) {
             for (k = i - 1; k >= 0; k -= 1) {
               if (temporaryBoard[k + 1][j].value === temporaryBoard[k][j].value
-                && temporaryBoard[k][j].isUsed === false) {
+                && temporaryBoard[k][j].isUsed === false && temporaryBoard[k + 1][j].isUsed === false) {
                 mergeTiles(k, j, (k + 1), j);
                 break;
               } else if (temporaryBoard[k][j].value === 0) {
@@ -169,7 +169,7 @@ class Game extends React.Component {
           if (temporaryBoard[i][j].value !== 0) {
             for (k = i + 1; k < data.site.siteMetadata.boardSize; k += 1) {
               if (temporaryBoard[k - 1][j].value === temporaryBoard[k][j].value
-                && temporaryBoard[k][j].isUsed === false) {
+                && temporaryBoard[k][j].isUsed === false && temporaryBoard[k - 1][j].isUsed === false) {
                 mergeTiles(k, j, (k - 1), j);
                 break;
               } else if (temporaryBoard[k][j].value === 0) {
@@ -259,26 +259,17 @@ class Game extends React.Component {
     return board;
   }
 
-  getTile = (width, row) => {
-    const { board } = this.state;
-    const rows = [];
-    for (let i = 0; i < width; i += 1) {
-      rows[i] = <Tile key={i} value={board[row][i]} />;
-    }
-
-    return (
-      <Row key={uuid.v4()}>
-        {rows}
-      </Row>
-    );
-  }
-
   getBoardTiles = (width, height) => {
-    const board = [];
+    const newBoard = [];
+    const { board } = this.state;
     for (let i = 0; i < height; i += 1) {
-      board[i] = this.getTile(width, i);
+      for (let j = 0; j < height; j += 1) {
+        if (board[i][j] !== 0) {
+          newBoard.push(<Tile key={uuid.v4()} value={board[i][j]} posX={i} posY={j} />);
+        }
+      }
     }
-    return board;
+    return newBoard;
   }
 
   render() {
