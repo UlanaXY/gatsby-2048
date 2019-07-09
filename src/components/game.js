@@ -59,6 +59,7 @@ class Game extends React.Component {
     document.addEventListener('keydown', this.handleKeyDown, false);
     this.newTile();
     this.newTile();
+    this.forceUpdate();
   }
 
   componentWillUnmount() {
@@ -92,7 +93,7 @@ class Game extends React.Component {
     }
 
     for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-      console.log(`${i}:  `, board[i][0], board[i][1], board[i][2], board[i][3]);
+      // console.log(`${i}:  `, board[i][0], board[i][1], board[i][2], board[i][3]);
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
         temporaryBoard[i][j] = new Element(board[i][j], false);
       }
@@ -195,8 +196,8 @@ class Game extends React.Component {
     let posY;
     const { board } = this.state;
     do {
-      posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize - 1));
-      posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize - 1));
+      posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
+      posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
     } while (board[posX][posY] !== 0);
     const whichTile = Math.floor(Math.random() * 9);
     if (whichTile === 0) {
