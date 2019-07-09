@@ -49,8 +49,8 @@ class Game extends React.Component {
 
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeyDown, false);
-    this.newTile();
-    this.newTile();
+    this.placeNewTile();
+    this.placeNewTile();
     this.forceUpdate();
   }
 
@@ -84,7 +84,8 @@ class Game extends React.Component {
     class Element {
       constructor(value, isUsed) {
         this.value = value;
-        this.isUsed = isUsed; // is merged
+        this.isUsed = isUsed; // Tile can't be merged twice in one move therefore
+        // we need to mark tile that was already merged
       }
     }
 
@@ -102,14 +103,14 @@ class Game extends React.Component {
       }
     }
 
-    const merge = (tileMergeIntoPosX, tileMergedIntoPosY,
+    const mergeTiles = (tileMergeIntoPosX, tileMergedIntoPosY,
       tileMergedFromPosX, tileMergedFromPosY) => {
       temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value *= 2;
       temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].isUsed = true;
       temporaryBoard[tileMergedFromPosX][tileMergedFromPosY].value = 0;
     };
 
-    const move = (tileMovedFromPosX, tileMovedFromPosY,
+    const moveTile = (tileMovedFromPosX, tileMovedFromPosY,
       tileMovedIntoPosX, tileMovedIntoPosY) => {
       // eslint-disable-next-line max-len
       temporaryBoard[tileMovedIntoPosX][tileMovedIntoPosY].value = temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value;
@@ -123,10 +124,10 @@ class Game extends React.Component {
             for (k = j + 1; k < data.site.siteMetadata.boardSize; k += 1) {
               if (temporaryBoard[i][k - 1].value === temporaryBoard[i][k].value
                 && temporaryBoard[i][k].isUsed === false) {
-                merge(i, k, i, (k - 1));
+                mergeTiles(i, k, i, (k - 1));
                 break;
               } else if (temporaryBoard[i][k].value === 0) {
-                move(i, (k - 1), i, k);
+                moveTile(i, (k - 1), i, k);
               }
             }
           }
@@ -139,10 +140,10 @@ class Game extends React.Component {
             for (k = j - 1; k >= 0; k -= 1) {
               if (temporaryBoard[i][k + 1].value === temporaryBoard[i][k].value
                 && temporaryBoard[i][k].isUsed === false) {
-                merge(i, k, i, (k + 1));
+                mergeTiles(i, k, i, (k + 1));
                 break;
               } else if (temporaryBoard[i][k].value === 0) {
-                move(i, (k + 1), i, k);
+                moveTile(i, (k + 1), i, k);
               }
             }
           }
@@ -155,10 +156,10 @@ class Game extends React.Component {
             for (k = i - 1; k >= 0; k -= 1) {
               if (temporaryBoard[k + 1][j].value === temporaryBoard[k][j].value
                 && temporaryBoard[k][j].isUsed === false) {
-                merge(k, j, (k + 1), j);
+                mergeTiles(k, j, (k + 1), j);
                 break;
               } else if (temporaryBoard[k][j].value === 0) {
-                move((k + 1), j, k, j);
+                moveTile((k + 1), j, k, j);
               }
             }
           }
@@ -171,10 +172,10 @@ class Game extends React.Component {
             for (k = i + 1; k < data.site.siteMetadata.boardSize; k += 1) {
               if (temporaryBoard[k - 1][j].value === temporaryBoard[k][j].value
                 && temporaryBoard[k][j].isUsed === false) {
-                merge(k, j, (k - 1), j);
+                mergeTiles(k, j, (k - 1), j);
                 break;
               } else if (temporaryBoard[k][j].value === 0) {
-                move((k - 1), j, k, j);
+                moveTile((k - 1), j, k, j);
               }
             }
           }
@@ -186,24 +187,44 @@ class Game extends React.Component {
         board[i][j] = temporaryBoard[i][j].value;
       }
     }
-    this.newTile();
+    this.placeNewTile();
     this.forceUpdate();
   }
 
-  newTile = () => {
+  checkIfBoardIsFull = () => {
+    const { data } = this.props;
+    let i;
+    let j;
+    let countFreePlaces = 0;
+    const { board } = this.state;
+    for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+      for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
+        if (board[i][j] === 0){
+          countFreePlaces += 1;
+        }
+      }
+    }
+    return countFreePlaces !== 0;
+  }
+
+  placeNewTile = () => {
     const { data } = this.props;
     let posX;
     let posY;
     const { board } = this.state;
-    do {
-      posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
-      posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
-    } while (board[posX][posY] !== 0);
-    const whichTile = Math.floor(Math.random() * 9);
-    if (whichTile === 0) {
-      board[posX][posY] = 4;
-    } else {
-      board[posX][posY] = 2;
+    // WIP
+    if (this.checkIfBoardIsFull) {} // end of game
+    else {
+      do {
+        posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
+        posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
+      } while (board[posX][posY] !== 0);
+      const whichTile = Math.floor(Math.random() * 9);
+      if (whichTile === 0) {
+        board[posX][posY] = 4;
+      } else {
+        board[posX][posY] = 2;
+      }
     }
   }
 
