@@ -87,7 +87,7 @@ export const query = graphql`
         site {
             siteMetadata {
                 title,
-                size
+                boardSize
             }
         }
     }

@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
     title: '2048',
-    size: '4',
+    boardSize: '4',
     description: 'Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.',
     author: 'Grzegorz Chamera',
   },
