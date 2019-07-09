@@ -42,16 +42,8 @@ const Row = styled.div`
 class Game extends React.Component {
   constructor(props) {
     super(props);
-    const { data } = this.props;
-    const board = [];
-    for (let i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-      board[i] = new Array(data.site.siteMetadata.boardSize);
-      for (let j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-        board[i][j] = 0;
-      }
-    }
     this.state = {
-      board,
+      board: this.initBoard(),
     };
   }
 
@@ -64,6 +56,18 @@ class Game extends React.Component {
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.handleKeyDown, false);
+  }
+
+  initBoard = () => {
+    const { data } = this.props;
+    const board = [];
+    for (let i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+      board[i] = new Array(data.site.siteMetadata.boardSize);
+      for (let j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
+        board[i][j] = 0;
+      }
+    }
+    return board;
   }
 
   handleKeyDown = (event) => {
@@ -80,7 +84,7 @@ class Game extends React.Component {
     class Element {
       constructor(value, isUsed) {
         this.value = value;
-        this.isUsed = isUsed;
+        this.isUsed = isUsed; // is merged
       }
     }
 
@@ -93,11 +97,24 @@ class Game extends React.Component {
     }
 
     for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-      // console.log(`${i}:  `, board[i][0], board[i][1], board[i][2], board[i][3]);
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
         temporaryBoard[i][j] = new Element(board[i][j], false);
       }
     }
+
+    const merge = (tileMergeIntoPosX, tileMergedIntoPosY,
+      tileMergedFromPosX, tileMergedFromPosY) => {
+      temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value *= 2;
+      temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].isUsed = true;
+      temporaryBoard[tileMergedFromPosX][tileMergedFromPosY].value = 0;
+    };
+
+    const move = (tileMovedFromPosX, tileMovedFromPosY,
+      tileMovedIntoPosX, tileMovedIntoPosY) => {
+      // eslint-disable-next-line max-len
+      temporaryBoard[tileMovedIntoPosX][tileMovedIntoPosY].value = temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value;
+      temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value = 0;
+    };
 
     if (direction.key === 'ArrowRight') {
       for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
@@ -106,13 +123,10 @@ class Game extends React.Component {
             for (k = j + 1; k < data.site.siteMetadata.boardSize; k += 1) {
               if (temporaryBoard[i][k - 1].value === temporaryBoard[i][k].value
                 && temporaryBoard[i][k].isUsed === false) {
-                temporaryBoard[i][k].value *= 2;
-                temporaryBoard[i][k].isUsed = true;
-                temporaryBoard[i][k - 1].value = 0;
+                merge(i, k, i, (k - 1));
                 break;
               } else if (temporaryBoard[i][k].value === 0) {
-                temporaryBoard[i][k].value = temporaryBoard[i][k - 1].value;
-                temporaryBoard[i][k - 1].value = 0;
+                move(i, (k - 1), i, k);
               }
             }
           }
@@ -125,13 +139,10 @@ class Game extends React.Component {
             for (k = j - 1; k >= 0; k -= 1) {
               if (temporaryBoard[i][k + 1].value === temporaryBoard[i][k].value
                 && temporaryBoard[i][k].isUsed === false) {
-                temporaryBoard[i][k].value *= 2;
-                temporaryBoard[i][k].isUsed = true;
-                temporaryBoard[i][k + 1].value = 0;
+                merge(i, k, i, (k + 1));
                 break;
               } else if (temporaryBoard[i][k].value === 0) {
-                temporaryBoard[i][k].value = temporaryBoard[i][k + 1].value;
-                temporaryBoard[i][k + 1].value = 0;
+                move(i, (k + 1), i, k);
               }
             }
           }
@@ -144,13 +155,10 @@ class Game extends React.Component {
             for (k = i - 1; k >= 0; k -= 1) {
               if (temporaryBoard[k + 1][j].value === temporaryBoard[k][j].value
                 && temporaryBoard[k][j].isUsed === false) {
-                temporaryBoard[k][j].value *= 2;
-                temporaryBoard[k][j].isUsed = true;
-                temporaryBoard[k + 1][j].value = 0;
+                merge(k, j, (k + 1), j);
                 break;
               } else if (temporaryBoard[k][j].value === 0) {
-                temporaryBoard[k][j].value = temporaryBoard[k + 1][j].value;
-                temporaryBoard[k + 1][j].value = 0;
+                move((k + 1), j, k, j);
               }
             }
           }
@@ -163,31 +171,23 @@ class Game extends React.Component {
             for (k = i + 1; k < data.site.siteMetadata.boardSize; k += 1) {
               if (temporaryBoard[k - 1][j].value === temporaryBoard[k][j].value
                 && temporaryBoard[k][j].isUsed === false) {
-                temporaryBoard[k][j].value *= 2;
-                temporaryBoard[k][j].isUsed = true; // is merged
-                temporaryBoard[k - 1][j].value = 0;
+                merge(k, j, (k - 1), j);
                 break;
               } else if (temporaryBoard[k][j].value === 0) {
-                temporaryBoard[k][j].value = temporaryBoard[k - 1][j].value;
-                temporaryBoard[k - 1][j].value = 0;
+                move((k - 1), j, k, j);
               }
             }
           }
         }
       }
     }
-    // console.log("\n");
     for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-      // console.log(i + ":  ", temporaryBoard[i][0].value, temporaryBoard[i][1].value,
-      // temporaryBoard[i][2].value, temporaryBoard[i][3].value);
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-        board[i][j] = 0;
         board[i][j] = temporaryBoard[i][j].value;
       }
     }
     this.newTile();
     this.forceUpdate();
-    // console.log("\n");
   }
 
   newTile = () => {
