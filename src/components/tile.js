@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
 
 const TileLayout = styled.div`
+  display: var(--if-display);
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   font-weight: bold;
   width: 127.5px;
@@ -12,12 +13,12 @@ const TileLayout = styled.div`
   border-radius: 4px;
   background: var(--tile-color);
   color: var(--text-color);
-  font-size: 4rem;
+  font-size: var(--font-size);
   text-align: center;
   line-height: 127.5px;
 `;
 
-const color = (value) => {
+const tileColor = (value) => {
   if (value === 2) {
     return '#EEE4DA';
   }
@@ -38,6 +39,8 @@ const color = (value) => {
   }
   if (value === 128) {
     return '#EDCF72';
+  } if (value < 3000) {
+    return '#EDCF72';
   }
   return 'rgba(250, 228, 218, 0.35)';
 };
@@ -49,12 +52,22 @@ const textColor = (value) => {
   return 'white';
 };
 
-const displayValue = (value) => {
-  if (value !== 0) {
-    return value;
+const fontSize = (value) => {
+  if (value < 100) { // 2 and 1 digits
+    return '4rem';
   }
-  return '';
+  if (value < 1000) { // 3 digits
+    return '3.5rem';
+  }
+  return '3rem'; // over 3 digits
 };
+
+const toDisplay = (value) => {
+  if (value === 0) {
+    return 'none';
+  }
+  return 'block';
+}
 
 class Tile extends Component {
   render() {
@@ -62,12 +75,14 @@ class Tile extends Component {
     return (
       <TileLayout
         style={{
-          '--tile-color': color(value),
+          '--tile-color': tileColor(value),
           '--text-color': textColor(value),
+          '--font-size': fontSize(value),
+          '--if-display': toDisplay(value),
         }}
       >
         {
-          displayValue(value)
+          value
         }
       </TileLayout>
     );
