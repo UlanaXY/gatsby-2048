@@ -41,10 +41,9 @@ const tileColor = (value) => {
   }
   if (value === 128) {
     return '#EDCF72';
-  } if (value < 3000) {
-    return '#EDCF72';
   }
-  return 'rgba(250, 228, 218, 0.35)';
+  return '#EDCF72';
+
 };
 
 const textColor = (value) => {

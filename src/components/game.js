@@ -264,7 +264,7 @@ class Game extends React.Component {
     );
   }
 
-  getState = (width, height) => {
+  getBoardTiles = (width, height) => {
     const board = [];
     for (let i = 0; i < height; i += 1) {
       board[i] = this.getTile(width, i);
@@ -278,7 +278,7 @@ class Game extends React.Component {
       <Container>
         {this.getBoard(data.site.siteMetadata.boardSize, data.site.siteMetadata.boardSize)}
         <BlankContainer>
-          {this.getState(data.site.siteMetadata.boardSize, data.site.siteMetadata.boardSize)}
+          {this.getBoardTiles(data.site.siteMetadata.boardSize, data.site.siteMetadata.boardSize)}
         </BlankContainer>
       </Container>
     );
