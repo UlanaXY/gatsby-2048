@@ -43,7 +43,6 @@ const tileColor = (value) => {
     return '#EDCF72';
   }
   return '#EDCF72';
-
 };
 
 const textColor = (value) => {

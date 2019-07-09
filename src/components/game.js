@@ -49,9 +49,7 @@ class Game extends React.Component {
 
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeyDown, false);
-    this.placeNewTile();
-    this.placeNewTile();
-    this.forceUpdate();
+    this.placeNewTile(true);
   }
 
   componentWillUnmount() {
@@ -182,13 +180,15 @@ class Game extends React.Component {
         }
       }
     }
+    const newBoard = [];
     for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+      newBoard[i] = new Array(data.site.siteMetadata.boardSize);
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-        board[i][j] = temporaryBoard[i][j].value;
+        newBoard[i][j] = temporaryBoard[i][j].value;
       }
     }
+    this.setState({ board: newBoard });
     this.placeNewTile();
-    this.forceUpdate();
   }
 
   checkIfBoardIsFull = () => {
@@ -207,24 +207,33 @@ class Game extends React.Component {
     return countFreePlaces !== 0;
   }
 
-  placeNewTile = () => {
+  placeNewTile = (init = false) => {
     const { data } = this.props;
     let posX;
     let posY;
     const { board } = this.state;
+    const newBoard = [];
+    for (let i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+      newBoard[i] = [...board[i]];
+    }
     // WIP
     if (!this.checkIfBoardIsFull) {} // game over
     else {
       do {
         posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
         posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
-      } while (board[posX][posY] !== 0);
+      } while (newBoard[posX][posY] !== 0);
       const whichTile = Math.floor(Math.random() * 9);
       if (whichTile === 0) {
-        board[posX][posY] = 4;
+        newBoard[posX][posY] = 4;
       } else {
-        board[posX][posY] = 2;
+        newBoard[posX][posY] = 2;
       }
+      this.setState({ board: newBoard }, () => {
+        if (init) {
+          this.placeNewTile();
+        }
+      });
     }
   }
 
