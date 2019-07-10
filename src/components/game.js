@@ -39,11 +39,27 @@ const Row = styled.div`
   display: block;
 `;
 
+class Coordinates {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+}
+
+class Movement {
+  constructor(from, to) {
+    this.from = from;
+    this.to = to;
+  }
+}
+
 class Game extends React.Component {
   constructor(props) {
     super(props);
+    const { data } = this.props;
     this.state = {
       board: this.initBoard(),
+      movedList: [],
     };
   }
 
@@ -78,6 +94,7 @@ class Game extends React.Component {
   move = (direction) => {
     const { data } = this.props;
     const { board } = this.state;
+    const { movedList } = this.state;
 
     class Element {
       constructor(value, isUsed) {
@@ -119,9 +136,12 @@ class Game extends React.Component {
       for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
         for (j = (data.site.siteMetadata.boardSize - 2); j >= 0; j -= 1) {
           if (temporaryBoard[i][j].value !== 0) {
+            movedList.push(new Movement(new Coordinates(i, j), new Coordinates(i, j)));
             for (k = j + 1; k < data.site.siteMetadata.boardSize; k += 1) {
               if (temporaryBoard[i][k - 1].value === temporaryBoard[i][k].value
-                && temporaryBoard[i][k].isUsed === false && temporaryBoard[i][k - 1].isUsed === false) {
+                && temporaryBoard[i][k].isUsed === false
+                && temporaryBoard[i][k - 1].isUsed === false) {
+                movedList[movedList.length - 1].to = new Coordinates(i, (k - 1));
                 mergeTiles(i, k, i, (k - 1));
                 break;
               } else if (temporaryBoard[i][k].value === 0) {
@@ -137,7 +157,8 @@ class Game extends React.Component {
           if (temporaryBoard[i][j].value !== 0) {
             for (k = j - 1; k >= 0; k -= 1) {
               if (temporaryBoard[i][k + 1].value === temporaryBoard[i][k].value
-                && temporaryBoard[i][k].isUsed === false && temporaryBoard[i][k + 1].isUsed === false) {
+                && temporaryBoard[i][k].isUsed === false
+                && temporaryBoard[i][k + 1].isUsed === false) {
                 mergeTiles(i, k, i, (k + 1));
                 break;
               } else if (temporaryBoard[i][k].value === 0) {
@@ -153,7 +174,8 @@ class Game extends React.Component {
           if (temporaryBoard[i][j].value !== 0) {
             for (k = i - 1; k >= 0; k -= 1) {
               if (temporaryBoard[k + 1][j].value === temporaryBoard[k][j].value
-                && temporaryBoard[k][j].isUsed === false && temporaryBoard[k + 1][j].isUsed === false) {
+                && temporaryBoard[k][j].isUsed === false
+                && temporaryBoard[k + 1][j].isUsed === false) {
                 mergeTiles(k, j, (k + 1), j);
                 break;
               } else if (temporaryBoard[k][j].value === 0) {
@@ -169,7 +191,8 @@ class Game extends React.Component {
           if (temporaryBoard[i][j].value !== 0) {
             for (k = i + 1; k < data.site.siteMetadata.boardSize; k += 1) {
               if (temporaryBoard[k - 1][j].value === temporaryBoard[k][j].value
-                && temporaryBoard[k][j].isUsed === false && temporaryBoard[k - 1][j].isUsed === false) {
+                && temporaryBoard[k][j].isUsed === false
+                && temporaryBoard[k - 1][j].isUsed === false) {
                 mergeTiles(k, j, (k - 1), j);
                 break;
               } else if (temporaryBoard[k][j].value === 0) {
@@ -265,7 +288,7 @@ class Game extends React.Component {
     for (let i = 0; i < height; i += 1) {
       for (let j = 0; j < height; j += 1) {
         if (board[i][j] !== 0) {
-          newBoard.push(<Tile key={uuid.v4()} value={board[i][j]} posX={i} posY={j} />);
+          newBoard.push(<Tile key={uuid.v4()} value={board[i][j]} posX={i} posY={j} newPosX={i} newPosY={j} />);
         }
       }
     }

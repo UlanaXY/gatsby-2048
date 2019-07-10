@@ -1,11 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { styled } from 'linaria/react';
+// import { styled } from 'linaria/react';
+import { css } from 'linaria';
 import { useSpring, animated } from 'react-spring';
 
-const TileLayout = styled.div`
+//   transform: var(--tile-position);
+
+const tileLayout = css`
   position: absolute;
-  transform: var(--tile-position);
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   font-weight: bold;
   width: 127.5px;
@@ -73,41 +75,53 @@ const toDisplay = (value) => {
   return value;
 };
 
-const tilePosition = (posX, posY) => `translate(${posY * (127.5 + 18)}px, ${posX * (127.5 + 18)}px)`;
+const tilePosition = (posX, posY) => `translate(${posX * (127.5 + 18)}px, ${posY * (127.5 + 18)}px)`;
 
 // WIP
-const animate = (posX, posY, newPosX, newPosY) => useSpring({
-  from: { translate: tilePosition(posX, posY) },
-  to: { translate: tilePosition(newPosX, newPosY) },
-  config: { duration: 100 },
-});
+// const animate = (posX, posY, newPosX, newPosY) => useSpring({
+//   from: { translate: tilePosition(posX, posY) },
+//   to: { translate: tilePosition(newPosX, newPosY) },
+//   config: { duration: 100 },
+// });
+//
+// const [posX, posY, posX, posY] = useSpring(() => ({opacity: 1}))
+// const [props] = useSpring(() => ({opacity: 1}));
 
-class Tile extends Component {
-  render() {
-    const { value, posX, posY } = this.props;
-    return (
-      // <animated.div style={animate(posX, posY, posX, posY)}>
-      <TileLayout
-        style={{
-          '--tile-color': tileColor(value),
-          '--text-color': textColor(value),
-          '--font-size': fontSize(value),
-          '--tile-position': tilePosition(posX, posY),
-        }}
-      >
-        {
-          toDisplay(value)
-        }
-      </TileLayout>
-      // </animated.div>
-    );
-  }
+function Tile(props) {
+  const {
+    posX, posY, value, newPosX, newPosY,
+  } = props;
+  const { xy } = useSpring({
+    from: {xy: [posY, posX]},
+    to: { xy: [posY, posX] },
+    config: { duration: 100 },
+  });
+  // console.log(xy);
+  return (
+    <animated.div
+      className={tileLayout}
+      style={{
+        transform: xy.interpolate(tilePosition),
+        '--tile-color': tileColor(value),
+        '--text-color': textColor(value),
+        '--font-size': fontSize(value),
+      }}
+    >
+      {
+        toDisplay(value)
+      }
+    </animated.div>
+  );
 }
 
 Tile.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types,react/require-default-props
+  //xy: PropTypes.any,
   value: PropTypes.number.isRequired,
   posX: PropTypes.number.isRequired,
   posY: PropTypes.number.isRequired,
+  newPosY: PropTypes.number.isRequired,
+  newPosX: PropTypes.number.isRequired,
 };
 
 export default Tile;
