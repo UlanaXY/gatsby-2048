@@ -49,7 +49,7 @@ class Game extends React.Component {
 
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeyDown, false);
-    this.placeNewTile(true);
+    this.placeNewTile(this.placeNewTile);
   }
 
   componentWillUnmount() {
@@ -207,7 +207,7 @@ class Game extends React.Component {
     return countFreePlaces !== 0;
   }
 
-  placeNewTile = (init = false) => {
+  placeNewTile = (callback = () => {}) => {
     const { data } = this.props;
     let posX;
     let posY;
@@ -229,11 +229,7 @@ class Game extends React.Component {
       } else {
         newBoard[posX][posY] = 2;
       }
-      this.setState({ board: newBoard }, () => {
-        if (init) {
-          this.placeNewTile();
-        }
-      });
+      this.setState({ board: newBoard }, callback);
     }
   }
 
