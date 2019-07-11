@@ -88,6 +88,7 @@ class Game extends React.Component {
   handleKeyDown = (event) => {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp'
       || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      this.setState({ movedList: [] });
       this.move(event);
     }
   }
@@ -134,17 +135,21 @@ class Game extends React.Component {
       tileMovedIntoPosX, tileMovedIntoPosY) => {
       // eslint-disable-next-line max-len
       temporaryBoard[tileMovedIntoPosX][tileMovedIntoPosY].value = temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value;
+      temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value = 0;
       // eslint-disable-next-line max-len
       movedList[movedList.length - 1].toCoords = new Coordinates(tileMovedIntoPosX, tileMovedIntoPosY);
-      temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value = 0;
     };
 
     if (direction.key === 'ArrowRight') {
       for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-        for (j = (data.site.siteMetadata.boardSize - 2); j >= 0; j -= 1) {
+        for (j = (data.site.siteMetadata.boardSize - 1); j >= 0; j -= 1) {
           if (temporaryBoard[i][j].value !== 0) {
-            movedList.push(new Movement(new Coordinates(i, j), new Coordinates(i, j),
-              temporaryBoard[i][j].value, temporaryBoard[i][j].value));
+            movedList.push(new Movement(
+              new Coordinates(i, j),
+              new Coordinates(i, j),
+              temporaryBoard[i][j].value,
+              temporaryBoard[i][j].value
+            ));
             for (k = j + 1; k < data.site.siteMetadata.boardSize; k += 1) {
               if (temporaryBoard[i][k - 1].value === temporaryBoard[i][k].value
                 && temporaryBoard[i][k].isUsed === false
@@ -160,7 +165,7 @@ class Game extends React.Component {
       }
     } else if (direction.key === 'ArrowLeft') {
       for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-        for (j = 1; j < data.site.siteMetadata.boardSize; j += 1) {
+        for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
           if (temporaryBoard[i][j].value !== 0) {
             movedList.push(new Movement(new Coordinates(i, j), new Coordinates(i, j),
               temporaryBoard[i][j].value, temporaryBoard[i][j].value));
@@ -179,7 +184,7 @@ class Game extends React.Component {
       }
     } else if (direction.key === 'ArrowUp') {
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-        for (i = 1; i < data.site.siteMetadata.boardSize; i += 1) {
+        for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
           if (temporaryBoard[i][j].value !== 0) {
             movedList.push(new Movement(new Coordinates(i, j), new Coordinates(i, j),
               temporaryBoard[i][j].value, temporaryBoard[i][j].value));
@@ -198,10 +203,14 @@ class Game extends React.Component {
       }
     } else if (direction.key === 'ArrowDown') {
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-        for (i = data.site.siteMetadata.boardSize - 2; i >= 0; i -= 1) {
+        for (i = data.site.siteMetadata.boardSize - 1; i >= 0; i -= 1) {
           if (temporaryBoard[i][j].value !== 0) {
-            movedList.push(new Movement(new Coordinates(i, j), new Coordinates(i, j),
-              temporaryBoard[i][j].value, temporaryBoard[i][j].value));
+            movedList.push(new Movement(
+              new Coordinates(i, j),
+              new Coordinates(i, j),
+              temporaryBoard[i][j].value,
+              temporaryBoard[i][j].value
+            ));
             for (k = i + 1; k < data.site.siteMetadata.boardSize; k += 1) {
               if (temporaryBoard[k - 1][j].value === temporaryBoard[k][j].value
                 && temporaryBoard[k][j].isUsed === false
@@ -224,6 +233,7 @@ class Game extends React.Component {
       }
     }
     this.setState({ board: newBoard });
+    console.log(newBoard);
     this.placeNewTile();
   }
 
@@ -242,6 +252,34 @@ class Game extends React.Component {
     }
     return countFreePlaces !== 0;
   }
+
+  checkIfBoardIsEmpty = () => {
+    const { data } = this.props;
+    let i;
+    let j;
+    let countFreePlaces = 0;
+    const { board } = this.state;
+    for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+      for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
+        if (board[i][j] === 0) {
+          countFreePlaces += 1;
+        }
+      }
+    }
+    return countFreePlaces === 16;
+  }
+
+  updateMovedList = (x, y, value) => {
+    this.setState((prevState) => ({
+      movedList: [...prevState.movedList, new Movement(
+        new Coordinates(x, y),
+        new Coordinates(x, y),
+        value,
+        value
+      )],
+    }));
+  }
+
 
   placeNewTile = (init = false) => {
     const { data } = this.props;
@@ -268,16 +306,8 @@ class Game extends React.Component {
       this.setState({ board: newBoard }, () => {
         if (init) {
           this.placeNewTile();
-          const { movedList } = this.state;
-          for (let i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-            for (let j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-              if (board[i][j] !== 0) {
-                movedList.push(new Movement(new Coordinates(i, j), new Coordinates(i, j),
-                  board[i][j], board[i][j]));
-              }
-            }
-          }
         }
+        this.updateMovedList(posX, posY, newBoard[posX][posY]);
       });
     }
   }
@@ -307,20 +337,22 @@ class Game extends React.Component {
   getBoardTiles = () => {
     const newBoard = [];
     const { movedList } = this.state;
-    if (movedList !== null) {
-      movedList.forEach(
+    if (!this.checkIfBoardIsEmpty()) {
+      for (let i = 0; i < movedList.length; i += 1) {
         newBoard.push(
           <Tile
             key={uuid.v4()}
-            value={movedList.fromTileValue}
-            newValue={movedList.toTileValue}
-            posX={movedList.toCoords.x}
-            posY={movedList.toCoords.y}
-            newPosX={movedList.fromCoords.x}
-            newPosY={movedList.fromCoords.y}
+            value={movedList[i].fromTileValue}
+            newValue={movedList[i].toTileValue}
+            posX={movedList[i].toCoords.x}
+            posY={movedList[i].toCoords.y}
+            newPosX={movedList[i].fromCoords.x}
+            newPosY={movedList[i].fromCoords.y}
           />
-        )
-      );
+        );
+      }
+      console.log('dupa', movedList);
+      return newBoard;
     }
     return newBoard;
   }

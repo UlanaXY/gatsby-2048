@@ -77,23 +77,13 @@ const toDisplay = (value) => {
 
 const tilePosition = (posX, posY) => `translate(${posX * (127.5 + 18)}px, ${posY * (127.5 + 18)}px)`;
 
-// WIP
-// const animate = (posX, posY, newPosX, newPosY) => useSpring({
-//   from: { translate: tilePosition(posX, posY) },
-//   to: { translate: tilePosition(newPosX, newPosY) },
-//   config: { duration: 100 },
-// });
-//
-// const [posX, posY, posX, posY] = useSpring(() => ({opacity: 1}))
-// const [props] = useSpring(() => ({opacity: 1}));
-
 function Tile(props) {
   const {
     value, newValue, posX, posY, newPosX, newPosY,
   } = props;
   const { xy } = useSpring({
-    from: { xy: [posY, posX] },
-    to: { xy: [newPosY, newPosX] },
+    from: { xy: [newPosY, newPosX] },
+    to: { xy: [posY, posX] },
     config: { duration: 100 },
   });
   // console.log(xy);
@@ -102,13 +92,13 @@ function Tile(props) {
       className={tileLayout}
       style={{
         transform: xy.interpolate(tilePosition),
-        '--tile-color': tileColor(value),
-        '--text-color': textColor(value),
-        '--font-size': fontSize(value),
+        '--tile-color': tileColor(newValue),
+        '--text-color': textColor(newValue),
+        '--font-size': fontSize(newValue),
       }}
     >
       {
-        toDisplay(value)
+        toDisplay(newValue)
       }
     </animated.div>
   );
