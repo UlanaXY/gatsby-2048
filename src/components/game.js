@@ -113,6 +113,7 @@ class Game extends React.Component {
     let i;
     let j;
     let k;
+    let impossibleMove = 0;
     for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
       temporaryBoard[i] = new Array(data.site.siteMetadata.boardSize);
     }
@@ -132,6 +133,7 @@ class Game extends React.Component {
       movedList[movedList.length - 1].toCoords = new Coordinates(tileMergeIntoPosX, tileMergedIntoPosY);
       // eslint-disable-next-line max-len
       movedList[movedList.length - 1].toTileValue = temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value;
+      impossibleMove += 1;
     };
 
     const moveTile = (tileMovedFromPosX, tileMovedFromPosY,
@@ -141,6 +143,7 @@ class Game extends React.Component {
       temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value = 0;
       // eslint-disable-next-line max-len
       movedList[movedList.length - 1].toCoords = new Coordinates(tileMovedIntoPosX, tileMovedIntoPosY);
+      impossibleMove += 1;
     };
 
     if (direction.key === 'ArrowRight') {
@@ -229,15 +232,18 @@ class Game extends React.Component {
       }
     }
     const newBoard = [];
-    for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-      newBoard[i] = new Array(data.site.siteMetadata.boardSize);
-      for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-        newBoard[i][j] = temporaryBoard[i][j].value;
+    if (impossibleMove !== 0) {
+      for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+        newBoard[i] = new Array(data.site.siteMetadata.boardSize);
+        for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
+          newBoard[i][j] = temporaryBoard[i][j].value;
+        }
       }
+      this.setState({ board: newBoard });
+      this.placeNewTile();
+    } else {
+      this.setState((prevState) => ({ movedList: prevState.movedList }));
     }
-    this.setState({ board: newBoard });
-    console.log(newBoard);
-    this.placeNewTile();
   }
 
   checkIfBoardIsFull = () => {
@@ -284,7 +290,7 @@ class Game extends React.Component {
   }
 
 
-  placeNewTile = (callback = null) => {
+  placeNewTile = (callback = () => {}) => {
     const { data } = this.props;
     let posX;
     let posY;
@@ -312,7 +318,7 @@ class Game extends React.Component {
       this.setState({ board: newBoard }, () => {
         this.updateMovedList(posX, posY, newBoard[posX][posY]);
         callback();
-        });
+      });
     }
   }
 
@@ -355,7 +361,6 @@ class Game extends React.Component {
           />
         );
       }
-      console.log('dupa', movedList);
       return newBoard;
     }
     return newBoard;
