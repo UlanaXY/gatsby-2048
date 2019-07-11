@@ -226,9 +226,10 @@ class Game extends React.Component {
         posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
         posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
       } while (newBoard[posX][posY] !== 0);
-      // There is 1 in 10 chance for a new Tile to be 4
-      // therefore we choose a number randomly in range=(0, 9)
-      const whichTile = Math.floor(Math.random() * 10);
+      // There is 10% chance for a new Tile to be 4
+      const chanceForFour = 10; // in percentages
+      const percentages = 100; // obvious
+      const whichTile = Math.floor(Math.random() * (percentages / chanceForFour));
       if (whichTile === 0) {
         newBoard[posX][posY] = 4;
       } else {
