@@ -66,7 +66,9 @@ class Game extends React.Component {
 
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeyDown, false);
-    this.placeNewTile(true);
+    // At the beginning of the game 2 tiles are needed.
+    // For them to load properly we use another newTile function in callback
+    this.placeNewTile(this.placeNewTile);
   }
 
   componentWillUnmount() {
@@ -101,8 +103,9 @@ class Game extends React.Component {
     class Element {
       constructor(value, isUsed) {
         this.value = value;
-        this.isUsed = isUsed; // Tile can't be merged twice in one move therefore
+        // Tile can't be merged twice in one move therefore
         // we need to mark tile that was already merged
+        this.isUsed = isUsed;
       }
     }
 
@@ -281,7 +284,7 @@ class Game extends React.Component {
   }
 
 
-  placeNewTile = (init = false) => {
+  placeNewTile = (callback = null) => {
     const { data } = this.props;
     let posX;
     let posY;
@@ -297,18 +300,19 @@ class Game extends React.Component {
         posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
         posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
       } while (newBoard[posX][posY] !== 0);
-      const whichTile = Math.floor(Math.random() * 9);
+      // There is 10% chance for a new Tile to be 4
+      const chanceForFour = 10; // in percentages
+      const percentages = 100; // obvious
+      const whichTile = Math.floor(Math.random() * (percentages / chanceForFour));
       if (whichTile === 0) {
         newBoard[posX][posY] = 4;
       } else {
         newBoard[posX][posY] = 2;
       }
       this.setState({ board: newBoard }, () => {
-        if (init) {
-          this.placeNewTile();
-        }
         this.updateMovedList(posX, posY, newBoard[posX][posY]);
-      });
+        callback();
+        });
     }
   }
 
