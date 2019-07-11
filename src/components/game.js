@@ -67,17 +67,6 @@ class Game extends React.Component {
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeyDown, false);
     this.placeNewTile(true);
-    const { data } = this.props;
-    const { movedList } = this.props;
-    const { board } = this.props;
-    for (let i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-      for (let j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-        if(board[i][j] !== 0) {
-          movedList.push(new Movement(new Coordinates(i, j), new Coordinates(i, j),
-            temporaryBoard[i][j].value, temporaryBoard[i][j].value))
-        }
-      }
-    }
   }
 
   componentWillUnmount() {
@@ -279,6 +268,15 @@ class Game extends React.Component {
       this.setState({ board: newBoard }, () => {
         if (init) {
           this.placeNewTile();
+          const { movedList } = this.state;
+          for (let i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+            for (let j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
+              if (board[i][j] !== 0) {
+                movedList.push(new Movement(new Coordinates(i, j), new Coordinates(i, j),
+                  board[i][j], board[i][j]));
+              }
+            }
+          }
         }
       });
     }
@@ -309,19 +307,21 @@ class Game extends React.Component {
   getBoardTiles = () => {
     const newBoard = [];
     const { movedList } = this.state;
-    movedList.forEach(
-      newBoard.push(
-        <Tile
-          key={uuid.v4()}
-          value={movedList.fromTileValue}
-          newValue={movedList.toTileValue}
-          posX={movedList.toCoords.x}
-          posY={movedList.toCoords.y}
-          newPosX={movedList.fromCoords.x}
-          newPosY={movedList.fromCoords.y}
-        />
-      )
-    );
+    if (movedList !== null) {
+      movedList.forEach(
+        newBoard.push(
+          <Tile
+            key={uuid.v4()}
+            value={movedList.fromTileValue}
+            newValue={movedList.toTileValue}
+            posX={movedList.toCoords.x}
+            posY={movedList.toCoords.y}
+            newPosX={movedList.fromCoords.x}
+            newPosY={movedList.fromCoords.y}
+          />
+        )
+      );
+    }
     return newBoard;
   }
 
@@ -340,7 +340,6 @@ class Game extends React.Component {
 
 Game.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  data: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
 };
 
