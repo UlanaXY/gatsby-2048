@@ -16,7 +16,6 @@ const tileLayout = css`
   margin-top: 18px;
   float: left;
   border-radius: 4px;
-  background: var(--tile-color);
   color: var(--text-color);
   font-size: var(--font-size);
   text-align: center;
@@ -75,16 +74,25 @@ const toDisplay = (value) => {
   return value;
 };
 
+const resize = (value, newValue) => {
+  if (value === newValue) {
+    return 'scale(1)';
+  }
+  return 'scale(1.2)';
+};
+
 const tilePosition = (posX, posY) => `translate(${posX * (127.5 + 18)}px, ${posY * (127.5 + 18)}px)`;
 
 function Tile(props) {
   const {
     value, newValue, posX, posY, newPosX, newPosY,
   } = props;
-  const { xy } = useSpring({
-    from: { xy: [newPosY, newPosX] },
-    to: { xy: [posY, posX] },
-    config: { duration: 100 },
+  const { xy, merge } = useSpring({
+    from: { xy: [newPosY, newPosX], merge: [value] },
+    to: async next => {
+      await next({ xy: [posY, posX], config: { duration: 200 } });
+      await next({ merge: [newValue], config: { duration: 200 } });
+    },
   });
   // console.log(xy);
   return (
@@ -92,7 +100,8 @@ function Tile(props) {
       className={tileLayout}
       style={{
         transform: xy.interpolate(tilePosition),
-        '--tile-color': tileColor(newValue),
+        //transform: merge.interpolate(resize),
+        background: merge.interpolate(tileColor),
         '--text-color': textColor(newValue),
         '--font-size': fontSize(newValue),
       }}
