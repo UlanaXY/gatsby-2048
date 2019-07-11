@@ -89,11 +89,11 @@ const tilePosition = (posX, posY) => `translate(${posX * (127.5 + 18)}px, ${posY
 
 function Tile(props) {
   const {
-    posX, posY, value, newPosX, newPosY,
+    value, newValue, posX, posY, newPosX, newPosY,
   } = props;
   const { xy } = useSpring({
-    from: {xy: [posY, posX]},
-    to: { xy: [posY, posX] },
+    from: { xy: [posY, posX] },
+    to: { xy: [newPosY, newPosX] },
     config: { duration: 100 },
   });
   // console.log(xy);
@@ -116,8 +116,9 @@ function Tile(props) {
 
 Tile.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types,react/require-default-props
-  //xy: PropTypes.any,
+  // xy: PropTypes.any,
   value: PropTypes.number.isRequired,
+  newValue: PropTypes.number.isRequired,
   posX: PropTypes.number.isRequired,
   posY: PropTypes.number.isRequired,
   newPosY: PropTypes.number.isRequired,
