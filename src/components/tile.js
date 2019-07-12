@@ -149,7 +149,7 @@ function Tile(props) {
     boxShadow,
   } = useSpring({
     from: {
-      scale: [newPosY, newPosX, 1],
+      scale: [posY, posX, 1],
       background: [value],
       color: [value],
       sizeFont: [value],
@@ -158,7 +158,7 @@ function Tile(props) {
     },
     to: async next => {
       await next({ // Tile move animation
-        scale: [posY, posX, 1],
+        scale: [newPosY, newPosX, 1],
         config: { duration: 100 },
       });
       await next({ // Tile change state animation
@@ -167,17 +167,17 @@ function Tile(props) {
         color: [newValue],
         sizeFont: [newValue],
         boxShadow: [newValue],
-        scale: [posY, posX, setScale(value, newValue)],
+        scale: [newPosY, newPosX, setScale(value, newValue)],
         config: { duration: 1 },
       });
       await next({ // Tile appear or merge animation
-        scale: [posY, posX, setScaleNext(value, newValue)],
+        scale: [newPosY, newPosX, setScaleNext(value, newValue)],
         config: {
           duration: 100,
         },
       });
       await next({ // Tile appear or merge animation
-        scale: [posY, posX, 1],
+        scale: [newPosY, newPosX, 1],
         config: {
           duration: 100,
         },

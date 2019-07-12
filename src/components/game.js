@@ -14,6 +14,10 @@ const Container = styled.div`
   position: relative;
 `;
 
+const GameOver = styled.div`
+
+`;
+
 const BlankContainer = styled.div`
   display: block;
   width: 600px;
@@ -374,10 +378,10 @@ class Game extends React.Component {
             key={uuid.v4()}
             value={movedList[i].fromTileValue}
             newValue={movedList[i].toTileValue}
-            posX={movedList[i].toCoords.x}
-            posY={movedList[i].toCoords.y}
-            newPosX={movedList[i].fromCoords.x}
-            newPosY={movedList[i].fromCoords.y}
+            posX={movedList[i].fromCoords.x}
+            posY={movedList[i].fromCoords.y}
+            newPosX={movedList[i].toCoords.x}
+            newPosY={movedList[i].toCoords.y}
           />
         );
       }
@@ -394,6 +398,7 @@ class Game extends React.Component {
         <BlankContainer>
           {this.getBoardTiles()}
         </BlankContainer>
+        <GameOver />
       </Container>
     );
   }
