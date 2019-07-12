@@ -1,10 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-// import { styled } from 'linaria/react';
 import { css } from 'linaria';
 import { useSpring, animated } from 'react-spring';
-
-//   transform: var(--tile-position);
 
 const tileLayout = css`
   display: var(--to-display);
@@ -90,6 +87,9 @@ const scaleTile = (posX, posY, scale) => {
 };
 
 const setScale = (value, newValue) => {
+  // if tile value remains unchanged it means that it did't merged or appear
+  // in this move so we don't need
+  // appear and merge animation
   if (value === newValue) {
     return 1;
   }
@@ -97,6 +97,9 @@ const setScale = (value, newValue) => {
 };
 
 const setScaleNext = (value, newValue) => {
+  // if tile value remains unchanged it means that it did't merged or appear
+  // in this move so we don't need
+  // appear and merge animation
   if (value === newValue) {
     return 1;
   }
@@ -122,11 +125,11 @@ function Tile(props) {
       display: [value],
     },
     to: async next => {
-      await next({
+      await next({ // Tile move animation
         scale: [posY, posX, 1],
         config: { duration: 200 },
       });
-      await next({
+      await next({ // Tile change state animation
         display: [newValue],
         background: [newValue],
         color: [newValue],
@@ -134,13 +137,13 @@ function Tile(props) {
         scale: [posY, posX, setScale(value, newValue)],
         config: { duration: 1 },
       });
-      await next({
+      await next({ // Tile appear or merge animation
         scale: [posY, posX, setScaleNext(value, newValue)],
         config: {
           duration: 100,
         },
       });
-      await next({
+      await next({ // Tile appear or merge animation
         scale: [posY, posX, 1],
         config: {
           duration: 100,
@@ -167,8 +170,6 @@ function Tile(props) {
 }
 
 Tile.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types,react/require-default-props
-  // xy: PropTypes.any,
   value: PropTypes.number.isRequired,
   newValue: PropTypes.number.isRequired,
   posX: PropTypes.number.isRequired,

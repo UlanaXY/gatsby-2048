@@ -46,6 +46,7 @@ class Coordinates {
   }
 }
 
+// this class is used to store information about what happened to a tile in this move
 class Movement {
   constructor(fromCoords, toCoords, fromTileValue, toTileValue) {
     this.fromCoords = fromCoords;
@@ -60,6 +61,8 @@ class Game extends React.Component {
     super(props);
     this.state = {
       board: this.initBoard(),
+      // this list stores information about every tile
+      // its initial and final coords and value
       movedList: [],
     };
   }
@@ -173,8 +176,12 @@ class Game extends React.Component {
       for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
         for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
           if (temporaryBoard[i][j].value !== 0) {
-            movedList.push(new Movement(new Coordinates(i, j), new Coordinates(i, j),
-              temporaryBoard[i][j].value, temporaryBoard[i][j].value));
+            movedList.push(new Movement(
+              new Coordinates(i, j),
+              new Coordinates(i, j),
+              temporaryBoard[i][j].value,
+              temporaryBoard[i][j].value
+            ));
             for (k = j - 1; k >= 0; k -= 1) {
               if (temporaryBoard[i][k + 1].value === temporaryBoard[i][k].value
                 && temporaryBoard[i][k].isUsed === false
@@ -192,8 +199,12 @@ class Game extends React.Component {
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
         for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
           if (temporaryBoard[i][j].value !== 0) {
-            movedList.push(new Movement(new Coordinates(i, j), new Coordinates(i, j),
-              temporaryBoard[i][j].value, temporaryBoard[i][j].value));
+            movedList.push(new Movement(
+              new Coordinates(i, j),
+              new Coordinates(i, j),
+              temporaryBoard[i][j].value,
+              temporaryBoard[i][j].value
+            ));
             for (k = i - 1; k >= 0; k -= 1) {
               if (temporaryBoard[k + 1][j].value === temporaryBoard[k][j].value
                 && temporaryBoard[k][j].isUsed === false
@@ -242,6 +253,8 @@ class Game extends React.Component {
       this.setState({ board: newBoard });
       this.placeNewTile();
     } else {
+      // without this, movedList becomes empty in next move and
+      // whole game breaks. NaN's appear instead of tiles
       this.setState((prevState) => ({ movedList: prevState.movedList }));
     }
   }
