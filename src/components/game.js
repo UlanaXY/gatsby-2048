@@ -317,7 +317,10 @@ class Game extends React.Component {
       newBoard[i] = [...board[i]];
     }
     // WIP
-    if (!this.checkIfBoardIsFull) {} // game over
+    // game over
+    if (!this.checkIfBoardIsFull) {
+
+    }
     else {
       do {
         posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
