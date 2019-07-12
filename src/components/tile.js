@@ -17,6 +17,7 @@ const tileLayout = css`
   text-align: center;
   line-height: 127.5px;
   font-size: var(--font-size);
+  box-shadow: var(--box-shadow);
 `;
 
 const tileColor = (value) => {
@@ -44,7 +45,36 @@ const tileColor = (value) => {
   if (value === 128) {
     return '#EDCF72';
   }
-  return '#EDCF72';
+  if (value === 256) {
+    return '#EDCC61';
+  }
+  if (value === 512) {
+    return '#EDC850';
+  }
+  if (value === 1024) {
+    return '#EDC53F';
+  }
+  if (value === 2048) {
+    return '#EDC22E';
+  }
+  return '#3C3A32';
+};
+
+const calcBoxShadow = (value) => {
+  if (value < 128) {
+    return ' 0 0px 0px 0 rgba(237,207,114, 0.2)';
+  } if (value === 128) {
+    return ' 0 0 10px 0px rgba(237,207,114, 1)';
+  } if (value === 256) {
+    return ' 0 0 15px 0px rgba(237,207,114, 1)';
+  } if (value === 512) {
+    return ' 0 0 18px 0px rgba(237,207,114, 1)';
+  } if (value === 1024) {
+    return ' 0 0 20px 0px rgba(237,207,114, 1)';
+  } if (value === 2048) {
+    return ' 0 0 22px 0px rgba(237,207,114, 1)';
+  }
+  return ' 0 0px 0px 0 rgba(237,207,114, 0.2)';
 };
 
 const textColor = (value) => {
@@ -116,6 +146,7 @@ function Tile(props) {
     background,
     sizeFont,
     display,
+    boxShadow,
   } = useSpring({
     from: {
       scale: [newPosY, newPosX, 1],
@@ -123,6 +154,7 @@ function Tile(props) {
       color: [value],
       sizeFont: [value],
       display: [value],
+      boxShadow: [value],
     },
     to: async next => {
       await next({ // Tile move animation
@@ -134,6 +166,7 @@ function Tile(props) {
         background: [newValue],
         color: [newValue],
         sizeFont: [newValue],
+        boxShadow: [newValue],
         scale: [posY, posX, setScale(value, newValue)],
         config: { duration: 1 },
       });
@@ -160,6 +193,7 @@ function Tile(props) {
         color: color.interpolate(textColor),
         '--font-size': sizeFont.interpolate(fontSize),
         '--to-display': display.interpolate(ifDisplay),
+        '--box-shadow': boxShadow.interpolate(calcBoxShadow),
       }}
     >
       {
