@@ -28,7 +28,7 @@ const Score = styled.div`
     text-align: center;
     padding: 10px 15px;
     margin-top: 10px;
-    color: var(--text-color-secondary);
+    color: var(--text-color);
 `;
 
 const Wrap = styled.div`

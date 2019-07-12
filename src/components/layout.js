@@ -23,7 +23,6 @@ export const globals = css`
     html {
       background: var(--background-color);
       font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
-      color: var(--text-color-main);
     }
     body {
       margin: 0;

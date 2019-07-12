@@ -1,10 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
-import { css } from 'linaria';
 import uuid from 'uuid';
 import Tile from './tile';
-import GameOver from './game-over';
 
 const Container = styled.div`
   display: block;
@@ -16,19 +14,8 @@ const Container = styled.div`
   position: relative;
 `;
 
-const gameOver = css`
-  display: block;
-  width: 600px;
-  height: 600px;
-  font-style: normal;
-  font-weight: bold;
-  line-height: 300px;
-  text-align: center;
-  font-size: 4rem;
-  background: var(--game-over-color);
-  border-radius: 5px;
-  top: 0;
-  position: absolute;
+const GameOver = styled.div`
+
 `;
 
 const BlankContainer = styled.div`
@@ -81,7 +68,6 @@ class Game extends React.Component {
       // this list stores information about every tile
       // its initial and final coords and value
       movedList: [],
-      isGameOver: false,
     };
   }
 
@@ -337,8 +323,9 @@ class Game extends React.Component {
     // WIP
     // game over
     if (!this.checkIfBoardIsFull) {
-      this.setState({ isGameOver: true });
-    } else {
+
+    }
+    else {
       do {
         posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
         posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
@@ -381,14 +368,6 @@ class Game extends React.Component {
     return board;
   }
 
-  ifDisplayGameOverMenu = () => {
-    const { isGameOver } = this.state;
-    if (isGameOver) {
-      return 'block';
-    }
-    return 'none';
-  }
-
   getBoardTiles = () => {
     const newBoard = [];
     const { movedList } = this.state;
@@ -413,22 +392,13 @@ class Game extends React.Component {
 
   render() {
     const { data } = this.props;
-    const { isGameOver } = this.state;
     return (
       <Container>
         {this.getBoard(data.site.siteMetadata.boardSize, data.site.siteMetadata.boardSize)}
         <BlankContainer>
           {this.getBoardTiles()}
         </BlankContainer>
-        <GameOver
-          ifDisplay={isGameOver}
-          className={gameOver}
-          style={{
-            '--game-over-display': this.ifDisplayGameOverMenu(),
-          }}
-        >
-          GAME OVER
-        </GameOver>
+        <GameOver />
       </Container>
     );
   }
