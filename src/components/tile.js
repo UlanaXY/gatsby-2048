@@ -127,7 +127,7 @@ function Tile(props) {
     to: async next => {
       await next({ // Tile move animation
         scale: [posY, posX, 1],
-        config: { duration: 200 },
+        config: { duration: 100 },
       });
       await next({ // Tile change state animation
         display: [newValue],
