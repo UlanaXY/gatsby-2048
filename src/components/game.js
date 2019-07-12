@@ -278,13 +278,13 @@ class Game extends React.Component {
     return countFreePlaces === 16;
   }
 
-  updateMovedList = (x, y, value) => {
+  updateMovedList = (x, y, value, newValue) => {
     this.setState((prevState) => ({
       movedList: [...prevState.movedList, new Movement(
         new Coordinates(x, y),
         new Coordinates(x, y),
         value,
-        value
+        newValue
       )],
     }));
   }
@@ -316,7 +316,7 @@ class Game extends React.Component {
         newBoard[posX][posY] = 2;
       }
       this.setState({ board: newBoard }, () => {
-        this.updateMovedList(posX, posY, newBoard[posX][posY]);
+        this.updateMovedList(posX, posY, 0, newBoard[posX][posY]);
         callback();
       });
     }
