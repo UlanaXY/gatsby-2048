@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { styled } from 'linaria/react';
-import { Link, graphql } from 'gatsby';
+import { graphql } from 'gatsby';
 
 import PropTypes from 'prop-types';
 import Layout from '../components/layout';
@@ -55,8 +55,20 @@ const GameContainer = styled.div`
 `;
 
 class IndexPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      points: 0,
+    };
+  }
+
+  Points = (pointsToAdd) => {
+    this.setState((prevState) => ({ points: prevState.points + pointsToAdd }));
+  }
+
   render() {
     const { data } = this.props;
+    const { points } = this.state;
     return (
       <Layout>
         <Main class="main">
@@ -68,12 +80,13 @@ class IndexPage extends Component {
           <GameContainer class="mid ">
             <Game
               data={data}
+              callBackFromParent={this.Points}
             />
           </GameContainer>
           <Wrap class="aside-2">
             <Score>
               <Up>SCORE:</Up>
-              87446
+              {points}
             </Score>
           </Wrap>
         </Main>

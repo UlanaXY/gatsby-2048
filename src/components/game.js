@@ -100,6 +100,7 @@ class Game extends React.Component {
 
   move = (direction) => {
     const { data } = this.props;
+    const { callBackFromParent } = this.props;
     const { board } = this.state;
     const { movedList } = this.state;
 
@@ -117,6 +118,7 @@ class Game extends React.Component {
     let j;
     let k;
     let impossibleMove = 0;
+    let pointsToAdd = 0;
     for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
       temporaryBoard[i] = new Array(data.site.siteMetadata.boardSize);
     }
@@ -137,6 +139,7 @@ class Game extends React.Component {
       // eslint-disable-next-line max-len
       movedList[movedList.length - 1].toTileValue = temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value;
       impossibleMove += 1;
+      pointsToAdd += temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value;
     };
 
     const moveTile = (tileMovedFromPosX, tileMovedFromPosY,
@@ -252,6 +255,7 @@ class Game extends React.Component {
       }
       this.setState({ board: newBoard });
       this.placeNewTile();
+      callBackFromParent(pointsToAdd);
     } else {
       // without this, movedList becomes empty in next move and
       // whole game breaks. NaN's appear instead of tiles
@@ -395,6 +399,7 @@ class Game extends React.Component {
 Game.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   data: PropTypes.object.isRequired,
+  callBackFromParent: PropTypes.func.isRequired,
 };
 
 export default Game;
