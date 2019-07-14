@@ -62,7 +62,7 @@ class IndexPage extends Component {
     };
   }
 
-  Points = (pointsToAdd) => {
+  points = (pointsToAdd) => {
     this.setState((prevState) => ({ points: prevState.points + pointsToAdd }));
   }
 
@@ -80,7 +80,8 @@ class IndexPage extends Component {
           <GameContainer class="mid ">
             <Game
               data={data}
-              callBackFromParent={this.Points}
+              callBackFromParent={this.points}
+              points={points}
             />
           </GameContainer>
           <Wrap class="aside-2">

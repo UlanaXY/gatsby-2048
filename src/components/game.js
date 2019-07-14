@@ -16,21 +16,6 @@ const Container = styled.div`
   position: relative;
 `;
 
-const gameOver = css`
-  display: block;
-  width: 600px;
-  height: 600px;
-  font-style: normal;
-  font-weight: bold;
-  line-height: 300px;
-  text-align: center;
-  font-size: 4rem;
-  background: var(--game-over-color);
-  border-radius: 5px;
-  top: 0;
-  position: absolute;
-`;
-
 const BlankContainer = styled.div`
   display: block;
   width: 600px;
@@ -81,7 +66,8 @@ class Game extends React.Component {
       // this list stores information about every tile
       // its initial and final coords and value
       movedList: [],
-      isGameOver: false,
+      // eslint-disable-next-line react/no-unused-state
+      isGameOver: false, // it is used. EsLint went nuts
     };
   }
 
@@ -94,6 +80,18 @@ class Game extends React.Component {
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.handleKeyDown, false);
+  }
+
+  newGame = () => {
+    this.setState({ board: this.initBoard() });
+    this.setState({ movedList: [] });
+    this.setState(
+      // eslint-disable-next-line react/no-unused-state
+      { isGameOver: false }, // it is used. EsLint went nuts
+      () => {
+        this.placeNewTile(this.placeNewTile);
+      }
+    );
   }
 
   initBoard = () => {
@@ -274,6 +272,9 @@ class Game extends React.Component {
       this.setState({ board: newBoard });
       this.placeNewTile();
       callBackFromParent(pointsToAdd);
+      if (this.checkIfBoardIsFull()) {
+        this.checkIfAnyMoveIsPossible();
+      }
     } else {
       // without this, movedList becomes empty in next move and
       // whole game breaks. NaN's appear instead of tiles
@@ -281,23 +282,27 @@ class Game extends React.Component {
     }
   }
 
-  checkIfBoardIsFull = () => {
+  checkIfAnyMoveIsPossible = () => {
     const { data } = this.props;
-    let i;
-    let j;
-    let countFreePlaces = 0;
     const { board } = this.state;
-    for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-      for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-        if (board[i][j] === 0) {
-          countFreePlaces += 1;
+    if (this.checkIfBoardIsFull()) {
+      let i;
+      let j;
+      for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+        for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
+          if ((i !== data.site.siteMetadata.boardSize - 1
+            && board[i][j] === board[i + 1][j])
+            || (j !== data.site.siteMetadata.boardSize - 1
+              && board[i][j] === board[i][j + 1])) {
+            return;
+          }
         }
       }
+      this.setState({ isGameOver: true });
     }
-    return countFreePlaces !== 0;
   }
 
-  checkIfBoardIsEmpty = () => {
+  countFreePlacesOnBoard = () => {
     const { data } = this.props;
     let i;
     let j;
@@ -310,8 +315,12 @@ class Game extends React.Component {
         }
       }
     }
-    return countFreePlaces === 16;
+    return countFreePlaces;
   }
+
+  checkIfBoardIsFull = () => this.countFreePlacesOnBoard() === 0
+
+  checkIfBoardIsEmpty = () => this.countFreePlacesOnBoard() === 16
 
   updateMovedList = (x, y, value, newValue) => {
     this.setState((prevState) => ({
@@ -334,29 +343,24 @@ class Game extends React.Component {
     for (let i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
       newBoard[i] = [...board[i]];
     }
-    // WIP
-    // game over
-    if (!this.checkIfBoardIsFull) {
-      this.setState({ isGameOver: true });
+
+    do {
+      posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
+      posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
+    } while (newBoard[posX][posY] !== 0);
+    // There is 10% chance for a new Tile to be 4
+    const chanceForFour = 10; // in percentages
+    const percentages = 100; // obvious
+    const whichTile = Math.floor(Math.random() * (percentages / chanceForFour));
+    if (whichTile === 0) {
+      newBoard[posX][posY] = 4;
     } else {
-      do {
-        posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
-        posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
-      } while (newBoard[posX][posY] !== 0);
-      // There is 10% chance for a new Tile to be 4
-      const chanceForFour = 10; // in percentages
-      const percentages = 100; // obvious
-      const whichTile = Math.floor(Math.random() * (percentages / chanceForFour));
-      if (whichTile === 0) {
-        newBoard[posX][posY] = 4;
-      } else {
-        newBoard[posX][posY] = 2;
-      }
-      this.setState({ board: newBoard }, () => {
-        this.updateMovedList(posX, posY, 0, newBoard[posX][posY]);
-        callback();
-      });
+      newBoard[posX][posY] = 2;
     }
+    this.setState({ board: newBoard }, () => {
+      this.updateMovedList(posX, posY, 0, newBoard[posX][posY]);
+      callback();
+    });
   }
 
   getRow = (width) => {
@@ -381,14 +385,6 @@ class Game extends React.Component {
     return board;
   }
 
-  ifDisplayGameOverMenu = () => {
-    const { isGameOver } = this.state;
-    if (isGameOver) {
-      return 'block';
-    }
-    return 'none';
-  }
-
   getBoardTiles = () => {
     const newBoard = [];
     const { movedList } = this.state;
@@ -411,24 +407,30 @@ class Game extends React.Component {
     return newBoard;
   }
 
+  getGameOver = () => {
+    const { isGameOver } = this.state;
+    const { points } = this.props;
+    if (isGameOver) {
+      return (
+        <GameOver
+          ifDisplay={isGameOver}
+          points={points}
+          newGame={this.newGame}
+        />
+      );
+    }
+    return <div />;
+  }
+
   render() {
     const { data } = this.props;
-    const { isGameOver } = this.state;
     return (
       <Container>
         {this.getBoard(data.site.siteMetadata.boardSize, data.site.siteMetadata.boardSize)}
         <BlankContainer>
           {this.getBoardTiles()}
         </BlankContainer>
-        <GameOver
-          ifDisplay={isGameOver}
-          className={gameOver}
-          style={{
-            '--game-over-display': this.ifDisplayGameOverMenu(),
-          }}
-        >
-          GAME OVER
-        </GameOver>
+        {this.getGameOver()}
       </Container>
     );
   }
@@ -438,6 +440,7 @@ Game.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   data: PropTypes.object.isRequired,
   callBackFromParent: PropTypes.func.isRequired,
+  points: PropTypes.number.isRequired,
 };
 
 export default Game;
