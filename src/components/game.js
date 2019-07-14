@@ -14,10 +14,6 @@ const Container = styled.div`
   position: relative;
 `;
 
-const GameOver = styled.div`
-
-`;
-
 const BlankContainer = styled.div`
   display: block;
   width: 600px;
@@ -67,6 +63,7 @@ class Game extends React.Component {
       board: this.initBoard(),
       // this list stores information about every tile
       // its initial and final coords and value
+      // eslint-disable-next-line react/no-unused-state
       movedList: [],
     };
   }
@@ -97,8 +94,7 @@ class Game extends React.Component {
   handleKeyDown = (event) => {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp'
       || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      this.setState({ movedList: [] });
-      this.move(event);
+      this.setState({ movedList: [] }, () => this.move(event));
     }
   }
 
@@ -106,7 +102,6 @@ class Game extends React.Component {
     const { data } = this.props;
     const { callBackFromParent } = this.props;
     const { board } = this.state;
-    const { movedList } = this.state;
 
     class Element {
       constructor(value, isUsed) {
@@ -133,15 +128,17 @@ class Game extends React.Component {
       }
     }
 
+    const newMovedList = [];
+
     const mergeTiles = (tileMergeIntoPosX, tileMergedIntoPosY,
       tileMergedFromPosX, tileMergedFromPosY) => {
       temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value *= 2;
       temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].isUsed = true;
       temporaryBoard[tileMergedFromPosX][tileMergedFromPosY].value = 0;
       // eslint-disable-next-line max-len
-      movedList[movedList.length - 1].toCoords = new Coordinates(tileMergeIntoPosX, tileMergedIntoPosY);
+      newMovedList[newMovedList.length - 1].toCoords = new Coordinates(tileMergeIntoPosX, tileMergedIntoPosY);
       // eslint-disable-next-line max-len
-      movedList[movedList.length - 1].toTileValue = temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value;
+      newMovedList[newMovedList.length - 1].toTileValue = temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value;
       impossibleMove += 1;
       pointsToAdd += temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value;
     };
@@ -152,7 +149,7 @@ class Game extends React.Component {
       temporaryBoard[tileMovedIntoPosX][tileMovedIntoPosY].value = temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value;
       temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value = 0;
       // eslint-disable-next-line max-len
-      movedList[movedList.length - 1].toCoords = new Coordinates(tileMovedIntoPosX, tileMovedIntoPosY);
+      newMovedList[newMovedList.length - 1].toCoords = new Coordinates(tileMovedIntoPosX, tileMovedIntoPosY);
       impossibleMove += 1;
     };
 
@@ -160,7 +157,7 @@ class Game extends React.Component {
       for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
         for (j = (data.site.siteMetadata.boardSize - 1); j >= 0; j -= 1) {
           if (temporaryBoard[i][j].value !== 0) {
-            movedList.push(new Movement(
+            newMovedList.push(new Movement(
               new Coordinates(i, j),
               new Coordinates(i, j),
               temporaryBoard[i][j].value,
@@ -183,7 +180,7 @@ class Game extends React.Component {
       for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
         for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
           if (temporaryBoard[i][j].value !== 0) {
-            movedList.push(new Movement(
+            newMovedList.push(new Movement(
               new Coordinates(i, j),
               new Coordinates(i, j),
               temporaryBoard[i][j].value,
@@ -206,7 +203,7 @@ class Game extends React.Component {
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
         for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
           if (temporaryBoard[i][j].value !== 0) {
-            movedList.push(new Movement(
+            newMovedList.push(new Movement(
               new Coordinates(i, j),
               new Coordinates(i, j),
               temporaryBoard[i][j].value,
@@ -229,7 +226,7 @@ class Game extends React.Component {
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
         for (i = data.site.siteMetadata.boardSize - 1; i >= 0; i -= 1) {
           if (temporaryBoard[i][j].value !== 0) {
-            movedList.push(new Movement(
+            newMovedList.push(new Movement(
               new Coordinates(i, j),
               new Coordinates(i, j),
               temporaryBoard[i][j].value,
@@ -258,6 +255,7 @@ class Game extends React.Component {
         }
       }
       this.setState({ board: newBoard });
+      this.setState({ movedList: newMovedList });
       this.placeNewTile();
       callBackFromParent(pointsToAdd);
     } else {
@@ -398,7 +396,6 @@ class Game extends React.Component {
         <BlankContainer>
           {this.getBoardTiles()}
         </BlankContainer>
-        <GameOver />
       </Container>
     );
   }
