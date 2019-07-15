@@ -95,6 +95,7 @@ class Game extends React.Component {
   handleKeyDown = (event) => {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp'
       || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      // eslint-disable-next-line react/no-unused-state
       this.setState({ movedList: [] }, () => this.move(event));
     }
   }
@@ -136,21 +137,21 @@ class Game extends React.Component {
       temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value *= 2;
       temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].isUsed = true;
       temporaryBoard[tileMergedFromPosX][tileMergedFromPosY].value = 0;
-      // eslint-disable-next-line max-len
-      newMovedList[newMovedList.length - 1].toCoords = new Coordinates(tileMergeIntoPosX, tileMergedIntoPosY);
-      // eslint-disable-next-line max-len
-      newMovedList[newMovedList.length - 1].toTileValue = temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value;
+      newMovedList[newMovedList.length - 1]
+        .toCoords = new Coordinates(tileMergeIntoPosX, tileMergedIntoPosY);
+      newMovedList[newMovedList.length - 1]
+        .toTileValue = temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value;
       impossibleMove = false;
       pointsToAdd += temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value;
     };
 
     const moveTile = (tileMovedFromPosX, tileMovedFromPosY,
       tileMovedIntoPosX, tileMovedIntoPosY) => {
-      // eslint-disable-next-line max-len
-      temporaryBoard[tileMovedIntoPosX][tileMovedIntoPosY].value = temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value;
+      temporaryBoard[tileMovedIntoPosX][tileMovedIntoPosY]
+        .value = temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value;
       temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value = 0;
-      // eslint-disable-next-line max-len
-      newMovedList[newMovedList.length - 1].toCoords = new Coordinates(tileMovedIntoPosX, tileMovedIntoPosY);
+      newMovedList[newMovedList.length - 1]
+        .toCoords = new Coordinates(tileMovedIntoPosX, tileMovedIntoPosY);
       impossibleMove = false;
     };
 
@@ -259,9 +260,7 @@ class Game extends React.Component {
       this.setState({ movedList: newMovedList }, () => this.placeNewTile());
       setPoints(pointsToAdd);
     } else {
-      // without this, movedList becomes empty in next move and
-      // whole game breaks. NaN's appear instead of tiles
-      this.setState((prevState) => ({ movedList: prevState.movedList }));
+      this.setState({ movedList: newMovedList });
     }
   }
 
