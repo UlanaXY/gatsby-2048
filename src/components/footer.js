@@ -74,8 +74,8 @@ const Footer = () => (
     <div className={wrap}>
       <Dropdown>
         <div className={dropdownContent}>
-          <Element>1</Element>
-          <Element>2</Element>
+          <Element>pl</Element>
+          <Element>en</Element>
           <Element>3</Element>
         </div>
         <div className={dropBtn}>Drop</div>

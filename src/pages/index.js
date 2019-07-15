@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { styled } from 'linaria/react';
 import { graphql } from 'gatsby';
-
 import PropTypes from 'prop-types';
+import '../components/i18n';
+import { Translation } from 'react-i18next';
 import Layout from '../components/layout';
 import Game from '../components/game';
+
 
 const Main = styled.div`
     display: flex;
@@ -86,7 +88,16 @@ class IndexPage extends Component {
           </GameContainer>
           <Wrap class="aside-2">
             <Score>
-              <Up>SCORE:</Up>
+              <Translation>
+                {
+                  t => (
+                    <Up>
+                      { t('SCORE')}
+                      :
+                    </Up>
+                  )
+                }
+              </Translation>
               {points}
             </Score>
           </Wrap>
