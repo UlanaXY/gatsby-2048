@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
+import './i18n';
+import { Translation } from 'react-i18next';
 
 const Button = styled.div`
   font-size: 2rem;
@@ -19,9 +21,13 @@ class NewGameButton extends React.Component {
   render() {
     const { newGame } = this.props;
     return (
-      <Button onClick={newGame}>
-        New Game
-      </Button>
+      <Translation>
+        {t => (
+          <Button onClick={newGame}>
+            {t('NEWGAME')}
+          </Button>
+        )}
+      </Translation>
     );
   }
 }

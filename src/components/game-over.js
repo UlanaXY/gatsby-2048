@@ -4,6 +4,8 @@ import { css } from 'linaria';
 import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
 
+import './i18n';
+import { Translation } from 'react-i18next';
 import NewGameButton from './new-game-button';
 
 const gameOver = css`
@@ -43,13 +45,22 @@ function GameOver(props) {
       className={gameOver}
       style={fadeIn}
     >
-      <Title>
-        GAME OVER
-      </Title>
-      <Up>
-        SCORE:
-        {points}
-      </Up>
+      <Translation>
+        {
+          t => (
+            <div>
+              <Title>
+                {t('GAMEOVER')}
+              </Title>
+              <Up>
+                {t('SCORE')}
+                :
+                {points}
+              </Up>
+            </div>
+          )
+        }
+      </Translation>
       <NewGameButton newGame={newGame} />
     </animated.div>
   );
