@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'linaria';
 import { useSpring, animated } from 'react-spring';
+import logarithmBase2 from './logarithm-base-2';
 
 const tileLayout = css`
   display: var(--to-display);
@@ -61,18 +62,9 @@ const tileColor = (value) => {
 };
 
 const calcBoxShadow = (value) => {
-  if (value < 128) {
-    return ' 0 0px 0px 0 rgba(237,207,114, 0.2)';
-  } if (value === 128) {
-    return ' 0 0 10px 0px rgba(237,207,114, 1)';
-  } if (value === 256) {
-    return ' 0 0 15px 0px rgba(237,207,114, 1)';
-  } if (value === 512) {
-    return ' 0 0 18px 0px rgba(237,207,114, 1)';
-  } if (value === 1024) {
-    return ' 0 0 20px 0px rgba(237,207,114, 1)';
-  } if (value === 2048) {
-    return ' 0 0 22px 0px rgba(237,207,114, 1)';
+  if (value <= 2048 && value >= 128) {
+    const numberOfTile = 5 + (logarithmBase2(value) - 6) * 3;
+    return ` 0 0 ${numberOfTile}px ${numberOfTile}px rgba(237,207,114, 0.2)`;
   }
   return ' 0 0px 0px 0 rgba(237,207,114, 0.2)';
 };
@@ -127,7 +119,7 @@ const setScale = (value, newValue) => {
 };
 
 const setScaleNext = (value, newValue) => {
-  // if tile value remains unchanged it means that it did't merged or appear
+  // if tile value remains unchanged it means that it didn't merged or appear
   // in this move so we don't need
   // appear and merge animation
   if (value === newValue) {
@@ -149,7 +141,7 @@ function Tile(props) {
     boxShadow,
   } = useSpring({
     from: {
-      scale: [newPosY, newPosX, 1],
+      scale: [posY, posX, 1],
       background: [value],
       color: [value],
       sizeFont: [value],
@@ -158,7 +150,7 @@ function Tile(props) {
     },
     to: async next => {
       await next({ // Tile move animation
-        scale: [posY, posX, 1],
+        scale: [newPosY, newPosX, 1],
         config: { duration: 100 },
       });
       await next({ // Tile change state animation
@@ -167,17 +159,17 @@ function Tile(props) {
         color: [newValue],
         sizeFont: [newValue],
         boxShadow: [newValue],
-        scale: [posY, posX, setScale(value, newValue)],
+        scale: [newPosY, newPosX, setScale(value, newValue)],
         config: { duration: 1 },
       });
       await next({ // Tile appear or merge animation
-        scale: [posY, posX, setScaleNext(value, newValue)],
+        scale: [newPosY, newPosX, setScaleNext(value, newValue)],
         config: {
           duration: 100,
         },
       });
       await next({ // Tile appear or merge animation
-        scale: [posY, posX, 1],
+        scale: [newPosY, newPosX, 1],
         config: {
           duration: 100,
         },
