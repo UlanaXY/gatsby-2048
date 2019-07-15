@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { styled } from 'linaria/react';
 import { graphql } from 'gatsby';
-
 import PropTypes from 'prop-types';
+import '../components/i18n';
+import { Translation } from 'react-i18next';
 import Layout from '../components/layout';
 import Game from '../components/game';
+
 
 const Main = styled.div`
     display: flex;
@@ -28,7 +30,7 @@ const Score = styled.div`
     text-align: center;
     padding: 10px 15px;
     margin-top: 10px;
-    color: var(--text-color);
+    color: var(--text-color-secondary);
 `;
 
 const Wrap = styled.div`
@@ -62,7 +64,7 @@ class IndexPage extends Component {
     };
   }
 
-  Points = (pointsToAdd) => {
+  points = (pointsToAdd) => {
     this.setState((prevState) => ({ points: prevState.points + pointsToAdd }));
   }
 
@@ -81,11 +83,21 @@ class IndexPage extends Component {
             <Game
               data={data}
               setPoints={this.Points}
+              points={points}
             />
           </GameContainer>
           <Wrap class="aside-2">
             <Score>
-              <Up>SCORE:</Up>
+              <Translation>
+                {
+                  t => (
+                    <Up>
+                      { t('SCORE')}
+                      :
+                    </Up>
+                  )
+                }
+              </Translation>
               {points}
             </Score>
           </Wrap>

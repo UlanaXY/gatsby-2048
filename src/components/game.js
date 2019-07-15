@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
+import { css } from 'linaria';
 import uuid from 'uuid';
 import Tile from './tile';
+import GameOver from './game-over';
 
 const Container = styled.div`
   display: block;
@@ -66,6 +68,8 @@ class Game extends React.Component {
       // its initial and final coords and value
       // eslint-disable-next-line react/no-unused-state
       movedList: [],
+      // eslint-disable-next-line react/no-unused-state
+      isGameOver: false, // it is used. EsLint went nuts
     };
   }
 
@@ -78,6 +82,18 @@ class Game extends React.Component {
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.handleKeyDown, false);
+  }
+
+  newGame = () => {
+    this.setState({ board: this.initBoard() });
+    this.setState({ movedList: [] });
+    this.setState(
+      // eslint-disable-next-line react/no-unused-state
+      { isGameOver: false }, // it is used. EsLint went nuts
+      () => {
+        this.placeNewTile(this.placeNewTile);
+      }
+    );
   }
 
   initBoard = () => {
@@ -264,23 +280,27 @@ class Game extends React.Component {
     }
   }
 
-  checkIfBoardIsFull = () => {
+  checkIfAnyMoveIsPossible = () => {
     const { data } = this.props;
-    let i;
-    let j;
-    let countFreePlaces = 0;
     const { board } = this.state;
-    for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-      for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-        if (board[i][j] === 0) {
-          countFreePlaces += 1;
+    if (this.checkIfBoardIsFull()) {
+      let i;
+      let j;
+      for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+        for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
+          if ((i !== data.site.siteMetadata.boardSize - 1
+            && board[i][j] === board[i + 1][j])
+            || (j !== data.site.siteMetadata.boardSize - 1
+              && board[i][j] === board[i][j + 1])) {
+            return;
+          }
         }
       }
+      this.setState({ isGameOver: true });
     }
-    return countFreePlaces !== 0;
   }
 
-  checkIfBoardIsEmpty = () => {
+  countFreePlacesOnBoard = () => {
     const { data } = this.props;
     let i;
     let j;
@@ -293,8 +313,12 @@ class Game extends React.Component {
         }
       }
     }
-    return countFreePlaces === 16;
+    return countFreePlaces;
   }
+
+  checkIfBoardIsFull = () => this.countFreePlacesOnBoard() === 0
+
+  checkIfBoardIsEmpty = () => this.countFreePlacesOnBoard() === 16
 
   updateMovedList = (x, y, value, newValue) => {
     this.setState((prevState) => ({
@@ -317,30 +341,27 @@ class Game extends React.Component {
     for (let i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
       newBoard[i] = [...board[i]];
     }
-    // WIP
-    // game over
-    if (!this.checkIfBoardIsFull) {
 
+    do {
+      posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
+      posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
+    } while (newBoard[posX][posY] !== 0);
+    // There is 10% chance for a new Tile to be 4
+    const chanceForFour = 10; // in percentages
+    const percentages = 100; // obvious
+    const whichTile = Math.floor(Math.random() * (percentages / chanceForFour));
+    if (whichTile === 0) {
+      newBoard[posX][posY] = 4;
+    } else {
+      newBoard[posX][posY] = 2;
     }
-    else {
-      do {
-        posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
-        posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
-      } while (newBoard[posX][posY] !== 0);
-      // There is 10% chance for a new Tile to be 4
-      const chanceForFour = 10; // in percentages
-      const percentages = 100; // obvious
-      const whichTile = Math.floor(Math.random() * (percentages / chanceForFour));
-      if (whichTile === 0) {
-        newBoard[posX][posY] = 4;
-      } else {
-        newBoard[posX][posY] = 2;
+    this.setState({ board: newBoard }, () => {
+      this.updateMovedList(posX, posY, 0, newBoard[posX][posY]);
+      if (this.countFreePlacesOnBoard() <= 1) {
+        this.checkIfAnyMoveIsPossible();
       }
-      this.setState({ board: newBoard }, () => {
-        this.updateMovedList(posX, posY, 0, newBoard[posX][posY]);
-        callback();
-      });
-    }
+      callback();
+    });
   }
 
   getRow = (width) => {
@@ -387,6 +408,21 @@ class Game extends React.Component {
     return newBoard;
   }
 
+  getGameOver = () => {
+    const { isGameOver } = this.state;
+    const { points } = this.props;
+    if (isGameOver) {
+      return (
+        <GameOver
+          ifDisplay={isGameOver}
+          points={points}
+          newGame={this.newGame}
+        />
+      );
+    }
+    return <div />;
+  }
+
   render() {
     const { data } = this.props;
     return (
@@ -395,6 +431,7 @@ class Game extends React.Component {
         <BlankContainer>
           {this.getBoardTiles()}
         </BlankContainer>
+        {this.getGameOver()}
       </Container>
     );
   }
@@ -404,6 +441,7 @@ Game.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   data: PropTypes.object.isRequired,
   setPoints: PropTypes.func.isRequired,
+  points: PropTypes.number.isRequired,
 };
 
 export default Game;
