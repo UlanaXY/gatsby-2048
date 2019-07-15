@@ -1,7 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { styled } from 'linaria/react';
+import { css } from 'linaria';
 import uuid from 'uuid';
+import Tile from './tile';
+import GameOver from './game-over';
 
 const Container = styled.div`
   display: block;
@@ -10,6 +13,16 @@ const Container = styled.div`
   height: 600px;
   background: var(--game-background-color);
   border-radius: 5px;
+  position: relative;
+`;
+
+const BlankContainer = styled.div`
+  display: block;
+  width: 600px;
+  height: 600px;
+  border-radius: 5px;
+  position: absolute;
+  top: 0;
 `;
 
 const Blank = styled.div`
@@ -28,23 +41,59 @@ const Row = styled.div`
   display: block;
 `;
 
+class Coordinates {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+}
+
+// this class is used to store information about what happened to a tile in this move
+// It helps properly display animations of movement of tiles
+class MovementInfo {
+  constructor(fromCoords, toCoords, fromTileValue, toTileValue) {
+    this.fromCoords = fromCoords;
+    this.toCoords = toCoords;
+    this.fromTileValue = fromTileValue;
+    this.toTileValue = toTileValue;
+  }
+}
 
 class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       board: this.initBoard(),
+      // this list stores information about every tile
+      // its initial and final coords and value
+      // eslint-disable-next-line react/no-unused-state
+      movedList: [],
+      // eslint-disable-next-line react/no-unused-state
+      isGameOver: false, // it is used. EsLint went nuts
     };
   }
 
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeyDown, false);
-    this.newTile();
-    this.newTile();
+    // At the beginning of the game 2 tiles are needed.
+    // For them to load properly we use another newTile function in callback
+    this.placeNewTile(this.placeNewTile);
   }
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.handleKeyDown, false);
+  }
+
+  newGame = () => {
+    this.setState({ board: this.initBoard() });
+    this.setState({ movedList: [] });
+    this.setState(
+      // eslint-disable-next-line react/no-unused-state
+      { isGameOver: false }, // it is used. EsLint went nuts
+      () => {
+        this.placeNewTile(this.placeNewTile);
+      }
+    );
   }
 
   initBoard = () => {
@@ -62,18 +111,22 @@ class Game extends React.Component {
   handleKeyDown = (event) => {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp'
       || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      this.move(event);
+      // eslint-disable-next-line react/no-unused-state
+      this.setState({ movedList: [] }, () => this.move(event));
     }
   }
 
   move = (direction) => {
     const { data } = this.props;
+    const { setPoints } = this.props;
     const { board } = this.state;
 
     class Element {
       constructor(value, isUsed) {
         this.value = value;
-        this.isUsed = isUsed; // is merged
+        // Tile can't be merged twice in one move therefore
+        // we need to mark tile that was already merged
+        this.isUsed = isUsed;
       }
     }
 
@@ -81,42 +134,61 @@ class Game extends React.Component {
     let i;
     let j;
     let k;
+    let impossibleMove = true;
+    let pointsToAdd = 0;
     for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
       temporaryBoard[i] = new Array(data.site.siteMetadata.boardSize);
     }
 
     for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-      // console.log(`${i}:  `, board[i][0], board[i][1], board[i][2], board[i][3]);
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
         temporaryBoard[i][j] = new Element(board[i][j], false);
       }
     }
 
-    const merge = (tileMergeIntoPosX, tileMergedIntoPosY,
+    const newMovedList = [];
+
+    const mergeTiles = (tileMergeIntoPosX, tileMergedIntoPosY,
       tileMergedFromPosX, tileMergedFromPosY) => {
       temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value *= 2;
       temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].isUsed = true;
       temporaryBoard[tileMergedFromPosX][tileMergedFromPosY].value = 0;
+      newMovedList[newMovedList.length - 1]
+        .toCoords = new Coordinates(tileMergeIntoPosX, tileMergedIntoPosY);
+      newMovedList[newMovedList.length - 1]
+        .toTileValue = temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value;
+      impossibleMove = false;
+      pointsToAdd += temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value;
     };
 
-    const move = (tileMovedFromPosX, tileMovedFromPosY,
+    const moveTile = (tileMovedFromPosX, tileMovedFromPosY,
       tileMovedIntoPosX, tileMovedIntoPosY) => {
-      // eslint-disable-next-line max-len
-      temporaryBoard[tileMovedIntoPosX][tileMovedIntoPosY].value = temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value;
+      temporaryBoard[tileMovedIntoPosX][tileMovedIntoPosY]
+        .value = temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value;
       temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value = 0;
+      newMovedList[newMovedList.length - 1]
+        .toCoords = new Coordinates(tileMovedIntoPosX, tileMovedIntoPosY);
+      impossibleMove = false;
     };
 
     if (direction.key === 'ArrowRight') {
       for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-        for (j = (data.site.siteMetadata.boardSize - 2); j >= 0; j -= 1) {
+        for (j = (data.site.siteMetadata.boardSize - 1); j >= 0; j -= 1) {
           if (temporaryBoard[i][j].value !== 0) {
+            newMovedList.push(new MovementInfo(
+              new Coordinates(i, j),
+              new Coordinates(i, j),
+              temporaryBoard[i][j].value,
+              temporaryBoard[i][j].value
+            ));
             for (k = j + 1; k < data.site.siteMetadata.boardSize; k += 1) {
               if (temporaryBoard[i][k - 1].value === temporaryBoard[i][k].value
-                && temporaryBoard[i][k].isUsed === false) {
-                merge(i, k, i, (k - 1));
+                && temporaryBoard[i][k].isUsed === false
+                && temporaryBoard[i][k - 1].isUsed === false) {
+                mergeTiles(i, k, i, (k - 1));
                 break;
               } else if (temporaryBoard[i][k].value === 0) {
-                move(i, (k - 1), i, k);
+                moveTile(i, (k - 1), i, k);
               }
             }
           }
@@ -124,15 +196,22 @@ class Game extends React.Component {
       }
     } else if (direction.key === 'ArrowLeft') {
       for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-        for (j = 1; j < data.site.siteMetadata.boardSize; j += 1) {
+        for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
           if (temporaryBoard[i][j].value !== 0) {
+            newMovedList.push(new MovementInfo(
+              new Coordinates(i, j),
+              new Coordinates(i, j),
+              temporaryBoard[i][j].value,
+              temporaryBoard[i][j].value
+            ));
             for (k = j - 1; k >= 0; k -= 1) {
               if (temporaryBoard[i][k + 1].value === temporaryBoard[i][k].value
-                && temporaryBoard[i][k].isUsed === false) {
-                merge(i, k, i, (k + 1));
+                && temporaryBoard[i][k].isUsed === false
+                && temporaryBoard[i][k + 1].isUsed === false) {
+                mergeTiles(i, k, i, (k + 1));
                 break;
               } else if (temporaryBoard[i][k].value === 0) {
-                move(i, (k + 1), i, k);
+                moveTile(i, (k + 1), i, k);
               }
             }
           }
@@ -140,15 +219,22 @@ class Game extends React.Component {
       }
     } else if (direction.key === 'ArrowUp') {
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-        for (i = 1; i < data.site.siteMetadata.boardSize; i += 1) {
+        for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
           if (temporaryBoard[i][j].value !== 0) {
+            newMovedList.push(new MovementInfo(
+              new Coordinates(i, j),
+              new Coordinates(i, j),
+              temporaryBoard[i][j].value,
+              temporaryBoard[i][j].value
+            ));
             for (k = i - 1; k >= 0; k -= 1) {
               if (temporaryBoard[k + 1][j].value === temporaryBoard[k][j].value
-                && temporaryBoard[k][j].isUsed === false) {
-                merge(k, j, (k + 1), j);
+                && temporaryBoard[k][j].isUsed === false
+                && temporaryBoard[k + 1][j].isUsed === false) {
+                mergeTiles(k, j, (k + 1), j);
                 break;
               } else if (temporaryBoard[k][j].value === 0) {
-                move((k + 1), j, k, j);
+                moveTile((k + 1), j, k, j);
               }
             }
           }
@@ -156,47 +242,126 @@ class Game extends React.Component {
       }
     } else if (direction.key === 'ArrowDown') {
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-        for (i = data.site.siteMetadata.boardSize - 2; i >= 0; i -= 1) {
+        for (i = data.site.siteMetadata.boardSize - 1; i >= 0; i -= 1) {
           if (temporaryBoard[i][j].value !== 0) {
+            newMovedList.push(new MovementInfo(
+              new Coordinates(i, j),
+              new Coordinates(i, j),
+              temporaryBoard[i][j].value,
+              temporaryBoard[i][j].value
+            ));
             for (k = i + 1; k < data.site.siteMetadata.boardSize; k += 1) {
               if (temporaryBoard[k - 1][j].value === temporaryBoard[k][j].value
-                && temporaryBoard[k][j].isUsed === false) {
-                merge(k, j, (k - 1), j);
+                && temporaryBoard[k][j].isUsed === false
+                && temporaryBoard[k - 1][j].isUsed === false) {
+                mergeTiles(k, j, (k - 1), j);
                 break;
               } else if (temporaryBoard[k][j].value === 0) {
-                move((k - 1), j, k, j);
+                moveTile((k - 1), j, k, j);
               }
             }
           }
         }
       }
     }
-    // console.log("\n");
-    for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
-      // console.log(`${i}:  `, temporaryBoard[i][0].value, temporaryBoard[i][1].value,
-      // temporaryBoard[i][2].value, temporaryBoard[i][3].value);
-      for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
-        board[i][j] = temporaryBoard[i][j].value;
+    const newBoard = [];
+    if (!impossibleMove) {
+      for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+        newBoard[i] = new Array(data.site.siteMetadata.boardSize);
+        for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
+          newBoard[i][j] = temporaryBoard[i][j].value;
+        }
       }
+      this.setState({ board: newBoard });
+      this.setState({ movedList: newMovedList }, () => this.placeNewTile());
+      setPoints(pointsToAdd);
+    } else {
+      this.setState({ movedList: newMovedList });
     }
-    // console.log('\n');
   }
 
-  newTile = () => {
+  checkIfAnyMoveIsPossible = () => {
+    const { data } = this.props;
+    const { board } = this.state;
+    if (this.checkIfBoardIsFull()) {
+      let i;
+      let j;
+      for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+        for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
+          if ((i !== data.site.siteMetadata.boardSize - 1
+            && board[i][j] === board[i + 1][j])
+            || (j !== data.site.siteMetadata.boardSize - 1
+              && board[i][j] === board[i][j + 1])) {
+            return;
+          }
+        }
+      }
+      this.setState({ isGameOver: true });
+    }
+  }
+
+  countFreePlacesOnBoard = () => {
+    const { data } = this.props;
+    let i;
+    let j;
+    let countFreePlaces = 0;
+    const { board } = this.state;
+    for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+      for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
+        if (board[i][j] === 0) {
+          countFreePlaces += 1;
+        }
+      }
+    }
+    return countFreePlaces;
+  }
+
+  checkIfBoardIsFull = () => this.countFreePlacesOnBoard() === 0
+
+  checkIfBoardIsEmpty = () => this.countFreePlacesOnBoard() === 16
+
+  updateMovedList = (x, y, value, newValue) => {
+    this.setState((prevState) => ({
+      movedList: [...prevState.movedList, new MovementInfo(
+        new Coordinates(x, y),
+        new Coordinates(x, y),
+        value,
+        newValue
+      )],
+    }));
+  }
+
+
+  placeNewTile = (callback = () => {}) => {
     const { data } = this.props;
     let posX;
     let posY;
     const { board } = this.state;
-    do {
-      posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize - 1));
-      posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize - 1));
-    } while (board[posX][posY] !== 0);
-    const whichTile = Math.floor(Math.random() * 9);
-    if (whichTile === 0) {
-      board[posX][posY] = 4;
-    } else {
-      board[posX][posY] = 2;
+    const newBoard = [];
+    for (let i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
+      newBoard[i] = [...board[i]];
     }
+
+    do {
+      posX = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
+      posY = Math.floor(Math.random() * (data.site.siteMetadata.boardSize));
+    } while (newBoard[posX][posY] !== 0);
+    // There is 10% chance for a new Tile to be 4
+    const chanceForFour = 10; // in percentages
+    const percentages = 100; // obvious
+    const whichTile = Math.floor(Math.random() * (percentages / chanceForFour));
+    if (whichTile === 0) {
+      newBoard[posX][posY] = 4;
+    } else {
+      newBoard[posX][posY] = 2;
+    }
+    this.setState({ board: newBoard }, () => {
+      this.updateMovedList(posX, posY, 0, newBoard[posX][posY]);
+      if (this.countFreePlacesOnBoard() <= 1) {
+        this.checkIfAnyMoveIsPossible();
+      }
+      callback();
+    });
   }
 
   getRow = (width) => {
@@ -221,11 +386,52 @@ class Game extends React.Component {
     return board;
   }
 
+  getBoardTiles = () => {
+    const newBoard = [];
+    const { movedList } = this.state;
+    if (!this.checkIfBoardIsEmpty()) {
+      for (let i = 0; i < movedList.length; i += 1) {
+        newBoard.push(
+          <Tile
+            key={uuid.v4()}
+            value={movedList[i].fromTileValue}
+            newValue={movedList[i].toTileValue}
+            posX={movedList[i].fromCoords.x}
+            posY={movedList[i].fromCoords.y}
+            newPosX={movedList[i].toCoords.x}
+            newPosY={movedList[i].toCoords.y}
+          />
+        );
+      }
+      return newBoard;
+    }
+    return newBoard;
+  }
+
+  getGameOver = () => {
+    const { isGameOver } = this.state;
+    const { points } = this.props;
+    if (isGameOver) {
+      return (
+        <GameOver
+          ifDisplay={isGameOver}
+          points={points}
+          newGame={this.newGame}
+        />
+      );
+    }
+    return <div />;
+  }
+
   render() {
     const { data } = this.props;
     return (
       <Container>
         {this.getBoard(data.site.siteMetadata.boardSize, data.site.siteMetadata.boardSize)}
+        <BlankContainer>
+          {this.getBoardTiles()}
+        </BlankContainer>
+        {this.getGameOver()}
       </Container>
     );
   }
@@ -234,6 +440,8 @@ class Game extends React.Component {
 Game.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   data: PropTypes.object.isRequired,
+  setPoints: PropTypes.func.isRequired,
+  points: PropTypes.number.isRequired,
 };
 
 export default Game;

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { styled } from 'linaria/react';
 import { css } from 'linaria';
+import i18n from './i18n';
 
 const FooterWrap = styled.div`
     background: var(--footer-color);
@@ -8,7 +9,7 @@ const FooterWrap = styled.div`
     bottom: 0;
     position: absolute;
     height: 3rem;
-    
+    color: var(--text-color-secondary);
     display: flex;
     align-items: flex-start;
     flex-flow: row;
@@ -45,11 +46,10 @@ const Element = styled.div`
 `;
 
 const dropBtn = css`
+  padding: 12px 16px;
   background: var(--buttons-color);
   display: block;
   text-align: center;
-  height: 3rem;
-  min-width: 50px;
   &:hover {
     background: var(--footer-color);
   }
@@ -67,21 +67,77 @@ const CustomWrap = styled.div`
   text-align: center;
 `;
 
-const Footer = () => (
-  <FooterWrap>
-    <div className={wrap} />
-    <CustomWrap />
-    <div className={wrap}>
-      <Dropdown>
-        <div className={dropdownContent}>
-          <Element>1</Element>
-          <Element>2</Element>
-          <Element>3</Element>
+class Footer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentLanguage: 'en',
+    };
+  }
+
+  changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+    this.setState({ currentLanguage: lng });
+  };
+
+  chooseFlag = (lng) => {
+    if (lng === 'en') {
+      return (
+        <img
+          className="icon"
+          src="https://cdn.pg.edu.pl/ekontakt-updated-theme/images/language/en_GB.png"
+          alt="English (United Kingdom)"
+          title="English (United Kingdom)"
+        />
+      );
+    } if (lng === 'pl') {
+      return (
+        <img
+          className="icon"
+          src="https://cdn.pg.edu.pl/ekontakt-updated-theme/images/language/pl_PL.png"
+          alt="polski (Polska)"
+          title="polski (Polska)"
+        />
+      );
+    }
+    return null;
+  }
+
+  render() {
+    const { currentLanguage } = this.state;
+    return (
+      <FooterWrap>
+        <div className={wrap} />
+        <CustomWrap />
+        <div className={wrap}>
+          <Dropdown>
+            <div className={dropdownContent}>
+              <Element onClick={() => this.changeLanguage('pl')}>
+                <img
+                  className="icon"
+                  src="https://cdn.pg.edu.pl/ekontakt-updated-theme/images/language/pl_PL.png"
+                  alt="polski (Polska)"
+                  title="polski (Polska)"
+                />
+              </Element>
+              <Element onClick={() => this.changeLanguage('en')}>
+                <img
+                  className="icon"
+                  src="https://cdn.pg.edu.pl/ekontakt-updated-theme/images/language/en_GB.png"
+                  alt="English (United Kingdom)"
+                  title="English (United Kingdom)"
+                />
+              </Element>
+              <Element>3</Element>
+            </div>
+            <div className={dropBtn}>
+              {this.chooseFlag(currentLanguage)}
+            </div>
+          </Dropdown>
         </div>
-        <div className={dropBtn}>Drop</div>
-      </Dropdown>
-    </div>
-  </FooterWrap>
-);
+      </FooterWrap>
+    );
+  }
+}
 
 export default Footer;

@@ -1,4 +1,3 @@
-
 :root {
     --background-color: #faf8ef;
     --menu-elements-color: #bbada0;
@@ -6,5 +5,7 @@
     --game-empty-tiles-color: rgba(238, 228, 218, 0.35);
     --footer-color: #bbada0;
     --buttons-color: #8F7A66;
-    --text-color: white;
+    --text-color-main: #776E65;
+    --text-color-secondary: white;
+    --game-over-color: rgba(237, 224, 200, 0.8);
 }

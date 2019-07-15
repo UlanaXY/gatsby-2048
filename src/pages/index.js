@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { styled } from 'linaria/react';
-import { Link, graphql } from 'gatsby';
-
+import { graphql } from 'gatsby';
 import PropTypes from 'prop-types';
+import '../components/i18n';
+import { Translation } from 'react-i18next';
 import Layout from '../components/layout';
 import Game from '../components/game';
+
 
 const Main = styled.div`
     display: flex;
@@ -28,7 +30,7 @@ const Score = styled.div`
     text-align: center;
     padding: 10px 15px;
     margin-top: 10px;
-    color: var(--text-color);
+    color: var(--text-color-secondary);
 `;
 
 const Wrap = styled.div`
@@ -55,8 +57,20 @@ const GameContainer = styled.div`
 `;
 
 class IndexPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      points: 0,
+    };
+  }
+
+  points = (pointsToAdd) => {
+    this.setState((prevState) => ({ points: prevState.points + pointsToAdd }));
+  }
+
   render() {
     const { data } = this.props;
+    const { points } = this.state;
     return (
       <Layout>
         <Main class="main">
@@ -68,12 +82,23 @@ class IndexPage extends Component {
           <GameContainer class="mid ">
             <Game
               data={data}
+              points={points}
+              setPoints={this.points}
             />
           </GameContainer>
           <Wrap class="aside-2">
             <Score>
-              <Up>SCORE:</Up>
-              87446
+              <Translation>
+                {
+                  t => (
+                    <Up>
+                      { t('SCORE')}
+                      :
+                    </Up>
+                  )
+                }
+              </Translation>
+              {points}
             </Score>
           </Wrap>
         </Main>
@@ -87,7 +112,7 @@ export const query = graphql`
         site {
             siteMetadata {
                 title,
-                boardSize
+                boardSize,
             }
         }
     }
