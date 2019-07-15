@@ -82,7 +82,7 @@ class IndexPage extends Component {
           <GameContainer class="mid ">
             <Game
               data={data}
-              setPoints={this.Points}
+              setPoints={this.points}
               points={points}
             />
           </GameContainer>
