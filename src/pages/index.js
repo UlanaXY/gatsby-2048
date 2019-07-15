@@ -80,7 +80,7 @@ class IndexPage extends Component {
           <GameContainer class="mid ">
             <Game
               data={data}
-              callBackFromParent={this.Points}
+              setPoints={this.Points}
             />
           </GameContainer>
           <Wrap class="aside-2">

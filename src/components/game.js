@@ -48,7 +48,7 @@ class Coordinates {
 
 // this class is used to store information about what happened to a tile in this move
 // It helps properly display animations of movement of tiles
-class Movement {
+class MovementInfo {
   constructor(fromCoords, toCoords, fromTileValue, toTileValue) {
     this.fromCoords = fromCoords;
     this.toCoords = toCoords;
@@ -101,7 +101,7 @@ class Game extends React.Component {
 
   move = (direction) => {
     const { data } = this.props;
-    const { callBackFromParent } = this.props;
+    const { setPoints } = this.props;
     const { board } = this.state;
 
     class Element {
@@ -117,7 +117,7 @@ class Game extends React.Component {
     let i;
     let j;
     let k;
-    let impossibleMove = 0;
+    let impossibleMove = true;
     let pointsToAdd = 0;
     for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
       temporaryBoard[i] = new Array(data.site.siteMetadata.boardSize);
@@ -140,7 +140,7 @@ class Game extends React.Component {
       newMovedList[newMovedList.length - 1].toCoords = new Coordinates(tileMergeIntoPosX, tileMergedIntoPosY);
       // eslint-disable-next-line max-len
       newMovedList[newMovedList.length - 1].toTileValue = temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value;
-      impossibleMove += 1;
+      impossibleMove = false;
       pointsToAdd += temporaryBoard[tileMergeIntoPosX][tileMergedIntoPosY].value;
     };
 
@@ -151,14 +151,14 @@ class Game extends React.Component {
       temporaryBoard[tileMovedFromPosX][tileMovedFromPosY].value = 0;
       // eslint-disable-next-line max-len
       newMovedList[newMovedList.length - 1].toCoords = new Coordinates(tileMovedIntoPosX, tileMovedIntoPosY);
-      impossibleMove += 1;
+      impossibleMove = false;
     };
 
     if (direction.key === 'ArrowRight') {
       for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
         for (j = (data.site.siteMetadata.boardSize - 1); j >= 0; j -= 1) {
           if (temporaryBoard[i][j].value !== 0) {
-            newMovedList.push(new Movement(
+            newMovedList.push(new MovementInfo(
               new Coordinates(i, j),
               new Coordinates(i, j),
               temporaryBoard[i][j].value,
@@ -181,7 +181,7 @@ class Game extends React.Component {
       for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
         for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
           if (temporaryBoard[i][j].value !== 0) {
-            newMovedList.push(new Movement(
+            newMovedList.push(new MovementInfo(
               new Coordinates(i, j),
               new Coordinates(i, j),
               temporaryBoard[i][j].value,
@@ -204,7 +204,7 @@ class Game extends React.Component {
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
         for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
           if (temporaryBoard[i][j].value !== 0) {
-            newMovedList.push(new Movement(
+            newMovedList.push(new MovementInfo(
               new Coordinates(i, j),
               new Coordinates(i, j),
               temporaryBoard[i][j].value,
@@ -227,7 +227,7 @@ class Game extends React.Component {
       for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
         for (i = data.site.siteMetadata.boardSize - 1; i >= 0; i -= 1) {
           if (temporaryBoard[i][j].value !== 0) {
-            newMovedList.push(new Movement(
+            newMovedList.push(new MovementInfo(
               new Coordinates(i, j),
               new Coordinates(i, j),
               temporaryBoard[i][j].value,
@@ -248,7 +248,7 @@ class Game extends React.Component {
       }
     }
     const newBoard = [];
-    if (impossibleMove !== 0) {
+    if (!impossibleMove) {
       for (i = 0; i < data.site.siteMetadata.boardSize; i += 1) {
         newBoard[i] = new Array(data.site.siteMetadata.boardSize);
         for (j = 0; j < data.site.siteMetadata.boardSize; j += 1) {
@@ -257,7 +257,7 @@ class Game extends React.Component {
       }
       this.setState({ board: newBoard });
       this.setState({ movedList: newMovedList }, () => this.placeNewTile());
-      callBackFromParent(pointsToAdd);
+      setPoints(pointsToAdd);
     } else {
       // without this, movedList becomes empty in next move and
       // whole game breaks. NaN's appear instead of tiles
@@ -299,7 +299,7 @@ class Game extends React.Component {
 
   updateMovedList = (x, y, value, newValue) => {
     this.setState((prevState) => ({
-      movedList: [...prevState.movedList, new Movement(
+      movedList: [...prevState.movedList, new MovementInfo(
         new Coordinates(x, y),
         new Coordinates(x, y),
         value,
@@ -404,7 +404,7 @@ class Game extends React.Component {
 Game.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   data: PropTypes.object.isRequired,
-  callBackFromParent: PropTypes.func.isRequired,
+  setPoints: PropTypes.func.isRequired,
 };
 
 export default Game;
