@@ -82,8 +82,8 @@ class IndexPage extends Component {
           <GameContainer class="mid ">
             <Game
               data={data}
-              setPoints={this.points}
               points={points}
+              setPoints={this.points}
             />
           </GameContainer>
           <Wrap class="aside-2">
