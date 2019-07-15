@@ -274,13 +274,11 @@ class Game extends React.Component {
       this.setState({ board: newBoard });
       this.setState({ movedList: newMovedList }, () => this.placeNewTile());
       callBackFromParent(pointsToAdd);
-      if (this.checkIfBoardIsFull()) {
-        this.checkIfAnyMoveIsPossible();
-      }
     } else {
       // without this, movedList becomes empty in next move and
       // whole game breaks. NaN's appear instead of tiles
-      this.setState((prevState) => ({ movedList: prevState.movedList }));
+      this.setState({ movedList: newMovedList });
+      // this.setState((prevState) => ({ movedList: prevState.movedList }));
     }
   }
 
@@ -361,6 +359,9 @@ class Game extends React.Component {
     }
     this.setState({ board: newBoard }, () => {
       this.updateMovedList(posX, posY, 0, newBoard[posX][posY]);
+      if (this.countFreePlacesOnBoard() <= 1) {
+        this.checkIfAnyMoveIsPossible();
+      }
       callback();
     });
   }
