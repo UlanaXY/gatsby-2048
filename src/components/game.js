@@ -47,6 +47,7 @@ class Coordinates {
 }
 
 // this class is used to store information about what happened to a tile in this move
+// It helps properly display animations of movement of tiles
 class Movement {
   constructor(fromCoords, toCoords, fromTileValue, toTileValue) {
     this.fromCoords = fromCoords;
@@ -255,8 +256,7 @@ class Game extends React.Component {
         }
       }
       this.setState({ board: newBoard });
-      this.setState({ movedList: newMovedList });
-      this.placeNewTile();
+      this.setState({ movedList: newMovedList }, () => this.placeNewTile());
       callBackFromParent(pointsToAdd);
     } else {
       // without this, movedList becomes empty in next move and
