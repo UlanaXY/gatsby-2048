@@ -7,7 +7,6 @@ import logarithmBase2 from './logarithm-base-2';
 const tileLayout = css`
   display: var(--to-display);
   position: absolute;
-  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   font-weight: bold;
   width: 127.5px;
   height: 127.5px;

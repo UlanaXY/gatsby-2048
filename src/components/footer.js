@@ -67,27 +67,24 @@ const CustomWrap = styled.div`
   text-align: center;
 `;
 
-class Footer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentLanguage: 'en',
-    };
-  }
+const icon = css`
+  height: 12px;
+`;
 
+class Footer extends Component {
   changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
-    this.setState({ currentLanguage: lng });
+    i18n.changeLanguage(lng).then((t) => {
+      t('key');
+    });
   };
 
-  chooseFlag = (lng) => {
+  getFlag = (lng) => {
     if (lng === 'en') {
       return (
         <img
           className="icon"
-          src="https://cdn.pg.edu.pl/ekontakt-updated-theme/images/language/en_GB.png"
+          src="../images/flags/uk.svg"
           alt="English (United Kingdom)"
-          title="English (United Kingdom)"
         />
       );
     } if (lng === 'pl') {
@@ -104,7 +101,6 @@ class Footer extends Component {
   }
 
   render() {
-    const { currentLanguage } = this.state;
     return (
       <FooterWrap>
         <div className={wrap} />
@@ -131,7 +127,7 @@ class Footer extends Component {
               <Element>3</Element>
             </div>
             <div className={dropBtn}>
-              {this.chooseFlag(currentLanguage)}
+              {this.getFlag(i18n.language)}
             </div>
           </Dropdown>
         </div>

@@ -1,4 +1,9 @@
 const logarithmBase2 = (number) => {
+  // eslint-disable-next-line no-bitwise
+  if (number & (number - 1) !== 0) {
+    console.error();
+    return 0;
+  }
   if (number === 0) {
     return 0;
   }// function only for numbers that are power of 2

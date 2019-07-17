@@ -85,15 +85,12 @@ class Game extends React.Component {
   }
 
   newGame = () => {
-    this.setState({ board: this.initBoard() });
-    this.setState({ movedList: [] });
-    this.setState(
-      // eslint-disable-next-line react/no-unused-state
-      { isGameOver: false }, // it is used. EsLint went nuts
-      () => {
-        this.placeNewTile(this.placeNewTile);
-      }
-    );
+    this.setState({
+      board: this.initBoard(),
+      movedList: [],
+      isGameOver: false, 
+    },
+    () => { this.placeNewTile(this.placeNewTile); });
   }
 
   initBoard = () => {
@@ -272,8 +269,7 @@ class Game extends React.Component {
           newBoard[i][j] = temporaryBoard[i][j].value;
         }
       }
-      this.setState({ board: newBoard });
-      this.setState({ movedList: newMovedList }, () => this.placeNewTile());
+      this.setState({ board: newBoard, movedList: newMovedList }, () => this.placeNewTile());
       setPoints(pointsToAdd);
     } else {
       this.setState({ movedList: newMovedList });
@@ -420,7 +416,7 @@ class Game extends React.Component {
         />
       );
     }
-    return <div />;
+    return null;
   }
 
   render() {
