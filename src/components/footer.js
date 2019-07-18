@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { styled } from 'linaria/react';
 import { css } from 'linaria';
 import i18n from './i18n';
+import Poland from '../assets/poland.svg';
+import UK from '../assets/uk.svg';
 
 const FooterWrap = styled.div`
     background: var(--footer-color);
@@ -81,20 +83,11 @@ class Footer extends Component {
   getFlag = (lng) => {
     if (lng === 'en') {
       return (
-        <img
-          className="icon"
-          src="../images/flags/uk.svg"
-          alt="English (United Kingdom)"
-        />
+        <UK />
       );
     } if (lng === 'pl') {
       return (
-        <img
-          className="icon"
-          src="https://cdn.pg.edu.pl/ekontakt-updated-theme/images/language/pl_PL.png"
-          alt="polski (Polska)"
-          title="polski (Polska)"
-        />
+        <Poland />
       );
     }
     return null;
