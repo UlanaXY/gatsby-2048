@@ -19,6 +19,7 @@ const Main = styled.div`
     }
 `;
 
+
 const Score = styled.div`
     display: inline-block;
     background: var(--menu-elements-color);
