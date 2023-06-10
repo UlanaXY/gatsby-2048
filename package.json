@@ -15,7 +15,7 @@
     "lint:styles": "stylelint src/**/*.{css,scss,js,jsx}"
   },
   "dependencies": {
-    "gatsby": "^2.9.2",
+    "gatsby": "^4.25.7",
     "gatsby-image": "^2.1.4",
     "gatsby-plugin-linaria": "^1.1.4",
     "gatsby-plugin-manifest": "^2.1.1",
