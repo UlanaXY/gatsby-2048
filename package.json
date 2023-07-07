@@ -34,7 +34,7 @@
   "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-config-cw": "https://gitlab.com/CommonWombat_Team/Public-Projects/cw-internal-eslintConfigCw.git",
-    "stylelint": "9.2.1",
+    "stylelint": "15.10.1",
     "stylelint-config-cw": "https://gitlab.com/CommonWombat_Team/Public-Projects/cw-internal-stylelintConfigCw.git",
     "stylelint-config-styled-components": "^0.1.1",
     "stylelint-processor-styled-components": "^1.6.0"
